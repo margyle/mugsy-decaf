@@ -33,9 +33,9 @@ export const recipe_steps = sqliteTable("recipe_steps", {
     .notNull()
     .references(() => recipes.id),
   step_order: integer("step_order").notNull(),
-  instruction: text("instruction").notNull(),
   duration_sec: integer("duration_sec"),
-  payload: text("payload"),
+  command: text("payload"), // JSON command to be sent to operator
+  command_type: text("command_type"), // TODO: figure out how to store type: moves, grind, pour, etc
 
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
