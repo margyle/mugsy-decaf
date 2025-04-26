@@ -20,7 +20,12 @@ export async function getAllCatsHandler(
   reply: FastifyReply
 ) {
   const cats = await catService.getAllCats();
-  return reply.code(200).send(cats);
+  const simplifiedCats = cats.map((cat) => ({
+    id: cat.id,
+    name: cat.name,
+    type: cat.type,
+  }));
+  return reply.code(200).send(simplifiedCats);
 }
 
 export async function getCatByIdHandler(
@@ -29,7 +34,11 @@ export async function getCatByIdHandler(
 ) {
   const { id } = request.params;
   const cat = await catService.getCatById(id);
-  return reply.code(200).send(cat);
+  return reply.code(200).send({
+    id: cat.id,
+    name: cat.name,
+    type: cat.type,
+  });
 }
 
 export async function createCatHandler(
@@ -37,7 +46,11 @@ export async function createCatHandler(
   reply: FastifyReply
 ) {
   const cat = await catService.createCat(request.body);
-  return reply.code(201).send(cat);
+  return reply.code(201).send({
+    id: cat.id,
+    name: cat.name,
+    type: cat.type,
+  });
 }
 
 export async function updateCatHandler(
@@ -46,7 +59,11 @@ export async function updateCatHandler(
 ) {
   const { id } = request.params;
   const cat = await catService.updateCat(id, request.body);
-  return reply.code(200).send(cat);
+  return reply.code(200).send({
+    id: cat.id,
+    name: cat.name,
+    type: cat.type,
+  });
 }
 
 export async function deleteCatHandler(

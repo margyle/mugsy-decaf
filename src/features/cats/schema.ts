@@ -6,6 +6,7 @@ const ALLOWED_CAT_TYPES = [
   "bengal",
   "ragdoll",
   "other",
+  "nugget",
 ];
 
 export const catSchema = {
