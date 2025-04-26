@@ -8,14 +8,11 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
-// ————————————————
-// Recipes
-// ————————————————
 export const recipes = sqliteTable("recipes", {
   id: text("id").primaryKey(), // UUID stored as TEXT
+  created_by: text("created_by"),
   name: text("name").notNull(),
   description: text("description"),
-
   coffee_weight: real("coffee_weight").notNull(),
   water_weight: real("water_weight").notNull(),
   water_temperature: integer("water_temperature").notNull(),
@@ -30,9 +27,6 @@ export const recipes = sqliteTable("recipes", {
     .default(sql`CURRENT_TIMESTAMP`),
 });
 
-// ————————————————
-// Recipe Steps
-// ————————————————
 export const recipe_steps = sqliteTable("recipe_steps", {
   id: text("id").primaryKey(),
   recipe_id: text("recipe_id")
@@ -51,7 +45,6 @@ export const recipe_steps = sqliteTable("recipe_steps", {
     .default(sql`CURRENT_TIMESTAMP`),
 });
 
-// Create index separately
 export const recipeStepIndex = index("idx_recipe_steps_recipe_id").on(
   recipe_steps.recipe_id
 );
