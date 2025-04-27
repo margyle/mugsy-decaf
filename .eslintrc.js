@@ -20,6 +20,7 @@ module.exports = {
     'node_modules',
     'drizzle',
     'drizzle.config.ts',
+    'vitest.config.js',
   ],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
