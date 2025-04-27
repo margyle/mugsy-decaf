@@ -8,8 +8,9 @@ A Fastify TypeScript backend for Mugsy
 - **Organized Architecture**: Feature-based organization with clear separation of concerns
 - **Database Integration**: SQLite with Drizzle ORM and migration support
 - **Security**: JWT authentication, role-based access control, and security headers
-- **Documentation**: API documentation with Swagger/OpenAPI
+- **Documentation**: API documentation with Swagger/OpenAPI and Scalar API Reference
 - **Configuration**: Environment-specific configurations for dev/staging/prod
+- **Recipe Management**: Create and manage coffee recipes with step-by-step brewing instructions
 
 ## Quick Start
 
@@ -123,8 +124,9 @@ npm run db:studio -- --port 8000
 
 Each feature is isolated and contains everything it needs:
 
-- **Cats Feature**: Example feature that manages cat data
+- **Cats Feature**: Example feature to use as a tutorial for feature creation
 - **Auth Feature**: Handles user registration, login, and authentication
+- **Recipes Feature**: Manages coffee recipes and their brewing steps
 
 Adding a new feature:
 
@@ -186,7 +188,93 @@ curl -X GET http://localhost:3000/api/v1/cats \
 
 ## API Documentation
 
-API documentation is available at `/documentation` in development mode.
+API documentation is available at:
+
+- Swagger UI: `/documentation` in development mode
+- Scalar API Reference: `/reference` in development mode (modern interface)
+
+## Recipes API
+
+The Recipe API allows for managing coffee recipes and their brewing steps.
+
+### Recipe Endpoints
+
+| Method | Endpoint              | Description         | Auth Required |
+| ------ | --------------------- | ------------------- | ------------- |
+| GET    | `/api/v1/recipes`     | Get all recipes     | No            |
+| GET    | `/api/v1/recipes/:id` | Get recipe by ID    | No            |
+| POST   | `/api/v1/recipes`     | Create a new recipe | Yes           |
+| PUT    | `/api/v1/recipes/:id` | Update a recipe     | Yes           |
+| DELETE | `/api/v1/recipes/:id` | Delete a recipe     | Yes           |
+
+### Recipe Step Endpoints
+
+| Method | Endpoint                    | Description                | Auth Required |
+| ------ | --------------------------- | -------------------------- | ------------- |
+| GET    | `/api/v1/recipes/:id/steps` | Get all steps for a recipe | No            |
+| GET    | `/api/v1/recipes/steps/:id` | Get step by ID             | No            |
+| POST   | `/api/v1/recipes/steps`     | Create a new recipe step   | Yes           |
+| PUT    | `/api/v1/recipes/steps/:id` | Update a recipe step       | Yes           |
+| DELETE | `/api/v1/recipes/steps/:id` | Delete a recipe step       | Yes           |
+
+### Recipe Model
+
+```typescript
+{
+  id: string;
+  created_by?: string;           // User ID of the creator
+  name: string;                  // Recipe name
+  description?: string;          // Recipe description
+  coffee_weight: number;         // Weight of coffee in grams
+  water_weight: number;          // Weight of water in grams
+  water_temperature: number;     // Water temperature in celsius
+  grind_size?: string;           // Description of grind size
+  brew_time: number;             // Total brew time in seconds
+}
+```
+
+### Recipe Step Model
+
+```typescript
+{
+  id: string;
+  recipe_id: string;             // ID of the parent recipe
+  step_order: number;            // Order of the step
+  duration_sec?: number;         // Duration of the step in seconds
+  command_parameter?: number;    // Numeric parameter for the command
+  command_type: string;          // Command type (move, grind, pour, wait, measure, other)
+}
+```
+
+### Example: Creating a Recipe
+
+```bash
+# Create a recipe
+curl -X POST http://localhost:3000/api/v1/recipes \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -d '{
+    "name": "Classic Pour Over",
+    "description": "Simple and clean pour over method",
+    "coffee_weight": 20,
+    "water_weight": 300,
+    "water_temperature": 92,
+    "grind_size": "Medium-fine",
+    "brew_time": 180
+  }'
+
+# Add a step to the recipe
+curl -X POST http://localhost:3000/api/v1/recipes/steps \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -d '{
+    "recipe_id": "RECIPE_ID_FROM_ABOVE",
+    "step_order": 1,
+    "duration_sec": 30,
+    "command_type": "pour",
+    "command_parameter": 60
+  }'
+```
 
 ## Contributing
 
