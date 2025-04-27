@@ -15,7 +15,7 @@ export const catSchema = {
   type: 'object',
   required: ['name', 'type'],
   properties: {
-    id: { type: 'integer' },
+    id: { type: 'string' },
     name: { type: 'string', minLength: 1, maxLength: 100 },
     type: {
       type: 'string',
@@ -32,7 +32,7 @@ export const catResponseSchema = {
   $id: 'catResponse',
   type: 'object',
   properties: {
-    id: { type: 'integer' },
+    id: { type: 'string' },
     name: { type: 'string' },
     type: { type: 'string' },
   },
@@ -52,12 +52,12 @@ export const errorResponseSchema = {
   },
 };
 
-// Request schemas
+// Parameter schemas
 export const getCatParamsSchema = {
   type: 'object',
   required: ['id'],
   properties: {
-    id: { type: 'integer' },
+    id: { type: 'string' },
   },
 };
 

@@ -3,9 +3,10 @@ import { db } from '../../db';
 import { cats, Cat, NewCat } from '../../db/schema/cats';
 import { eq, sql } from 'drizzle-orm';
 import { NotFoundError } from '../../utils/errors';
+import { v4 as uuidv4 } from 'uuid';
 
 interface CatParams {
-  id: number;
+  id: string;
 }
 
 interface CreateCatBody {
@@ -55,7 +56,16 @@ export async function createCatHandler(
   request: FastifyRequest<{ Body: CreateCatBody }>,
   reply: FastifyReply,
 ) {
-  const result = await db.insert(cats).values(request.body).returning();
+  // Generate a UUID for the cat
+  const catId = uuidv4();
+
+  // Add the ID to the cat data
+  const catData = {
+    id: catId,
+    ...request.body,
+  };
+
+  const result = await db.insert(cats).values(catData).returning();
   const cat = result[0];
 
   return reply.code(201).send({

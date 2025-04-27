@@ -3,6 +3,7 @@ import { db } from '../../db';
 import { users, User } from '../../db/schema/users';
 import { eq } from 'drizzle-orm';
 import * as bcrypt from 'bcrypt';
+import { v4 as uuidv4 } from 'uuid';
 
 const SALT_ROUNDS = 12; // High work factor for better security
 
@@ -87,8 +88,12 @@ export async function registerHandler(
     // Hash password
     const hashedPassword = await hashPassword(request.body.password);
 
+    // Generate UUID for user
+    const userId = uuidv4();
+
     // Insert user to database
     const userData = {
+      id: userId,
       username: request.body.username,
       password: hashedPassword,
     };

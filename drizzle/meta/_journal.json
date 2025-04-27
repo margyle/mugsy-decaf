@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1745694463984,
-      "tag": "0000_slimy_spirit",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1745703098913,
-      "tag": "0001_easy_lyja",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1745705828862,
-      "tag": "0002_calm_iceman",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1745706177371,
-      "tag": "0003_dazzling_wendell_vaughn",
+      "when": 1745769043890,
+      "tag": "0000_wandering_king_cobra",
       "breakpoints": true
     }
   ]
