@@ -24,7 +24,7 @@ export function buildApp() {
     return {
       name: 'DECAF API',
       description: 'Does Every Coffee Action, Friend',
-      version: '1.0.0',
+      version: '0.1.0',
     };
   });
 

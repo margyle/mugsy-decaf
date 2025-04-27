@@ -16,7 +16,7 @@ A Fastify TypeScript backend for Mugsy
 
 ### Prerequisites
 
-- Node.js 18.x or higher
+- Node.js 20.x or higher
 - npm or yarn
 
 ### Installation
