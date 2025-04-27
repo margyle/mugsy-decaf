@@ -8,7 +8,6 @@ A Fastify TypeScript backend for Mugsy
 - **Organized Architecture**: Feature-based organization with clear separation of concerns
 - **Database Integration**: SQLite with Drizzle ORM and migration support
 - **Security**: JWT authentication, role-based access control, and security headers
-- **Developer Experience**: Comprehensive error handling and logging
 - **Documentation**: API documentation with Swagger/OpenAPI
 - **Configuration**: Environment-specific configurations for dev/staging/prod
 
