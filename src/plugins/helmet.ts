@@ -1,8 +1,8 @@
-import fp from "fastify-plugin";
-import helmet from "@fastify/helmet";
-import { FastifyPluginAsync } from "fastify";
+import fp from 'fastify-plugin';
+import helmet from '@fastify/helmet';
+import { FastifyPluginAsync } from 'fastify';
 
-const helmetPlugin: FastifyPluginAsync = async (fastify) => {
+const helmetPlugin: FastifyPluginAsync = async fastify => {
   // Configure security headers
   await fastify.register(helmet, {
     contentSecurityPolicy: {
@@ -10,7 +10,7 @@ const helmetPlugin: FastifyPluginAsync = async (fastify) => {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:"],
+        imgSrc: ["'self'", 'data:'],
       },
     },
   });

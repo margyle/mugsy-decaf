@@ -1,5 +1,5 @@
-import { buildApp } from "./app";
-import { envConfig } from "./config";
+import { buildApp } from './app';
+import { envConfig } from './config';
 
 const start = async () => {
   const app = buildApp();
@@ -11,9 +11,9 @@ const start = async () => {
     });
     app.log.info(`Server is running on ${envConfig.HOST}:${envConfig.PORT}`);
 
-    if (envConfig.NODE_ENV !== "production") {
+    if (envConfig.NODE_ENV !== 'production') {
       app.log.info(
-        `API documentation available at ${envConfig.HOST}:${envConfig.PORT}/documentation`
+        `API documentation available at ${envConfig.HOST}:${envConfig.PORT}/documentation`,
       );
     }
   } catch (err) {

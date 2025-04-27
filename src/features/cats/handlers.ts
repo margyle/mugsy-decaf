@@ -1,5 +1,5 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import * as catService from "./service";
+import { FastifyReply, FastifyRequest } from 'fastify';
+import * as catService from './service';
 
 interface CatParams {
   id: number;
@@ -17,10 +17,10 @@ interface UpdateCatBody {
 
 export async function getAllCatsHandler(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const cats = await catService.getAllCats();
-  const simplifiedCats = cats.map((cat) => ({
+  const simplifiedCats = cats.map(cat => ({
     id: cat.id,
     name: cat.name,
     type: cat.type,
@@ -30,7 +30,7 @@ export async function getAllCatsHandler(
 
 export async function getCatByIdHandler(
   request: FastifyRequest<{ Params: CatParams }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const { id } = request.params;
   const cat = await catService.getCatById(id);
@@ -43,7 +43,7 @@ export async function getCatByIdHandler(
 
 export async function createCatHandler(
   request: FastifyRequest<{ Body: CreateCatBody }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const cat = await catService.createCat(request.body);
   return reply.code(201).send({
@@ -55,7 +55,7 @@ export async function createCatHandler(
 
 export async function updateCatHandler(
   request: FastifyRequest<{ Params: CatParams; Body: UpdateCatBody }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const { id } = request.params;
   const cat = await catService.updateCat(id, request.body);
@@ -68,7 +68,7 @@ export async function updateCatHandler(
 
 export async function deleteCatHandler(
   request: FastifyRequest<{ Params: CatParams }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const { id } = request.params;
   await catService.deleteCat(id);

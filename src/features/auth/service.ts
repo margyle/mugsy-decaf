@@ -1,8 +1,8 @@
-import { db } from "../../db";
-import { users, User, NewUser } from "../../db/schema/users";
-import { eq } from "drizzle-orm";
-import { FastifyInstance } from "fastify";
-import * as bcrypt from "bcrypt";
+import { db } from '../../db';
+import { users, User, NewUser as _NewUser } from '../../db/schema/users';
+import { eq } from 'drizzle-orm';
+import { FastifyInstance } from 'fastify';
+import * as bcrypt from 'bcrypt';
 
 const SALT_ROUNDS = 12; // High work factor for better security
 
@@ -23,7 +23,7 @@ async function hashPassword(password: string): Promise<string> {
  */
 async function verifyPassword(
   password: string,
-  hash: string
+  hash: string,
 ): Promise<boolean> {
   return await bcrypt.compare(password, hash);
 }
@@ -32,7 +32,6 @@ export async function registerUser(userData: {
   username: string;
   password: string;
 }): Promise<User> {
-  // Hash the password before storing
   const user = {
     username: userData.username,
     password: await hashPassword(userData.password),
@@ -45,7 +44,7 @@ export async function registerUser(userData: {
 export async function authenticateUser(
   fastify: FastifyInstance,
   email: string,
-  password: string
+  password: string,
 ): Promise<{ user: User; token: string } | null> {
   const result = await db.select().from(users).where(eq(users.username, email));
 
@@ -55,14 +54,12 @@ export async function authenticateUser(
     return null;
   }
 
-  // Verify the password against the stored hash
   const passwordValid = await verifyPassword(password, user.password);
 
   if (!passwordValid) {
     return null;
   }
 
-  // Generate JWT token
   const token = fastify.jwt.sign({
     id: user.id,
     username: user.username,
@@ -72,7 +69,7 @@ export async function authenticateUser(
   return {
     user: {
       ...user,
-      password: "[REDACTED]", // Don't return the password
+      password: '[REDACTED]',
     } as User,
     token,
   };

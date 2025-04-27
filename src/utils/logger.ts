@@ -1,21 +1,21 @@
-import pino from "pino";
-import { envConfig } from "../config";
+import pino from 'pino';
+import { envConfig } from '../config';
 
 // Define log configuration based on environment
 const logConfig = {
   development: {
     transport: {
-      target: "pino-pretty",
+      target: 'pino-pretty',
       options: {
-        translateTime: "HH:MM:ss Z",
-        ignore: "pid,hostname",
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname',
         colorize: true,
       },
     },
-    level: "debug",
+    level: 'debug',
   },
   production: {
-    level: "info",
+    level: 'info',
     formatters: {
       level: (label: string) => {
         return { level: label };
@@ -25,7 +25,7 @@ const logConfig = {
     // for better performance and standard JSON logs for log analyzers
   },
   staging: {
-    level: "debug",
+    level: 'debug',
     formatters: {
       level: (label: string) => {
         return { level: label };

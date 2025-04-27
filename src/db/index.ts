@@ -1,12 +1,12 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import DatabaseConstructor, { Database } from "better-sqlite3";
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import DatabaseConstructor, { Database } from 'better-sqlite3';
 
-import { dbConfig } from "../config";
-import * as schema from "./schema";
+import { dbConfig } from '../config';
+import * as schema from './schema';
 
 // Make sure the data directory exists
-import { mkdirSync, existsSync } from "fs";
-import { dirname, resolve, isAbsolute } from "path";
+import { mkdirSync, existsSync } from 'fs';
+import { dirname, resolve, isAbsolute } from 'path';
 
 // Ensure the database directory exists
 const dbPath = isAbsolute(dbConfig.url)

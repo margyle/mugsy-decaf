@@ -1,0 +1,6 @@
+node_modules/
+dist/
+drizzle/
+drizzle.config.ts
+# The helmet file has special quotes that are hard to fix
+src/plugins/helmet.ts 

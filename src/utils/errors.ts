@@ -17,22 +17,22 @@ export class AppError extends Error {
 }
 
 // Common error factories
-export const NotFoundError = (message = "Resource not found") =>
+export const NotFoundError = (message = 'Resource not found') =>
   new AppError(message, 404);
 
-export const BadRequestError = (message = "Bad request") =>
+export const BadRequestError = (message = 'Bad request') =>
   new AppError(message, 400);
 
-export const UnauthorizedError = (message = "Unauthorized") =>
+export const UnauthorizedError = (message = 'Unauthorized') =>
   new AppError(message, 401);
 
-export const ForbiddenError = (message = "Forbidden") =>
+export const ForbiddenError = (message = 'Forbidden') =>
   new AppError(message, 403);
 
-export const ConflictError = (message = "Conflict with existing resource") =>
+export const ConflictError = (message = 'Conflict with existing resource') =>
   new AppError(message, 409);
 
 export const InternalServerError = (
-  message = "Internal server error",
-  isOperational = false
+  message = 'Internal server error',
+  isOperational = false,
 ) => new AppError(message, 500, isOperational);

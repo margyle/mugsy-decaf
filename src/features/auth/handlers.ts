@@ -1,5 +1,5 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import * as authService from "./service";
+import { FastifyReply, FastifyRequest } from 'fastify';
+import * as authService from './service';
 
 interface LoginRequest {
   username: string;
@@ -13,18 +13,18 @@ interface RegisterRequest {
 
 export async function loginHandler(
   request: FastifyRequest<{ Body: LoginRequest }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const { username, password } = request.body;
 
   const result = await authService.authenticateUser(
     request.server,
     username,
-    password
+    password,
   );
 
   if (!result) {
-    return reply.code(401).send({ error: "Invalid username or password" });
+    return reply.code(401).send({ error: 'Invalid username or password' });
   }
 
   return reply.code(200).send(result);
@@ -32,7 +32,7 @@ export async function loginHandler(
 
 export async function registerHandler(
   request: FastifyRequest<{ Body: RegisterRequest }>,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   try {
     const user = await authService.registerUser(request.body);
@@ -44,11 +44,11 @@ export async function registerHandler(
     });
   } catch (error: any) {
     // Check for unique constraint violation
-    if (error.message?.includes("UNIQUE constraint failed")) {
-      return reply.code(409).send({ error: "Email already exists" });
+    if (error.message?.includes('UNIQUE constraint failed')) {
+      return reply.code(409).send({ error: 'Email already exists' });
     }
 
     request.log.error(error);
-    return reply.code(500).send({ error: "Internal server error" });
+    return reply.code(500).send({ error: 'Internal server error' });
   }
 }

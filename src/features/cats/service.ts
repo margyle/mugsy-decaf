@@ -1,7 +1,7 @@
-import { db } from "../../db";
-import { cats, Cat, NewCat } from "../../db/schema/cats";
-import { eq, sql } from "drizzle-orm";
-import { NotFoundError } from "../../utils/errors";
+import { db } from '../../db';
+import { cats, Cat, NewCat } from '../../db/schema/cats';
+import { eq, sql } from 'drizzle-orm';
+import { NotFoundError } from '../../utils/errors';
 
 export async function getAllCats(): Promise<Cat[]> {
   return db.select().from(cats);
@@ -24,7 +24,7 @@ export async function createCat(data: NewCat): Promise<Cat> {
 
 export async function updateCat(
   id: number,
-  data: Partial<NewCat>
+  data: Partial<NewCat>,
 ): Promise<Cat> {
   // First check if the cat exists
   await getCatById(id);

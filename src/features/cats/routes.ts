@@ -1,11 +1,11 @@
-import { FastifyInstance } from "fastify";
-import * as handlers from "./handlers";
+import { FastifyInstance } from 'fastify';
+import * as handlers from './handlers';
 import {
   catSchema,
   getCatParamsSchema,
   createCatBodySchema,
   updateCatBodySchema,
-} from "./schema";
+} from './schema';
 
 // Using a type that includes the custom plugins
 type FastifyInstanceWithAuth = FastifyInstance & {
@@ -20,58 +20,60 @@ export default async function catRoutes(fastify: FastifyInstance) {
   // Register the cat schema
   fastify.addSchema(catSchema);
 
-  // Define routes
+  // get all cats
   fastify.route({
-    method: "GET",
-    url: "/",
+    method: 'GET',
+    url: '/',
     schema: {
       response: {
         200: {
-          type: "array",
-          items: { $ref: "cat#" },
+          type: 'array',
+          items: { $ref: 'cat#' },
         },
       },
     },
     handler: handlers.getAllCatsHandler,
     onResponse: (request, reply, done) => {
-      fastify.logOperation(request, reply, "Get all cats");
+      fastify.logOperation(request, reply, 'Get all cats');
       done();
     },
   });
 
+  // get cat by id
   fastify.route({
-    method: "GET",
-    url: "/:id",
+    method: 'GET',
+    url: '/:id',
     schema: {
       params: getCatParamsSchema,
       response: {
-        200: { $ref: "cat#" },
+        200: { $ref: 'cat#' },
         404: {
-          type: "object",
+          type: 'object',
           properties: {
-            error: { type: "string" },
+            error: { type: 'string' },
           },
         },
       },
     },
     handler: handlers.getCatByIdHandler,
     onResponse: (request, reply, done) => {
-      fastify.logOperation(request, reply, "Get cat by ID");
+      fastify.logOperation(request, reply, 'Get cat by ID');
       done();
     },
   });
 
+  // create cat
   fastify.route({
-    method: "POST",
-    url: "/",
+    method: 'POST',
+    url: '/',
     schema: {
       body: createCatBodySchema,
       response: {
-        201: { $ref: "cat#" },
+        201: { $ref: 'cat#' },
         400: {
-          type: "object",
+          type: 'object',
           properties: {
-            error: { type: "string" },
+            error: { type: 'string' },
           },
         },
       },
@@ -79,29 +81,30 @@ export default async function catRoutes(fastify: FastifyInstance) {
     preHandler: [server.authenticate],
     handler: handlers.createCatHandler,
     onResponse: (request, reply, done) => {
-      fastify.logOperation(request, reply, "Create cat");
+      fastify.logOperation(request, reply, 'Create cat');
       done();
     },
   });
 
+  // update cat
   fastify.route({
-    method: "PUT",
-    url: "/:id",
+    method: 'PUT',
+    url: '/:id',
     schema: {
       params: getCatParamsSchema,
       body: updateCatBodySchema,
       response: {
-        200: { $ref: "cat#" },
+        200: { $ref: 'cat#' },
         400: {
-          type: "object",
+          type: 'object',
           properties: {
-            error: { type: "string" },
+            error: { type: 'string' },
           },
         },
         404: {
-          type: "object",
+          type: 'object',
           properties: {
-            error: { type: "string" },
+            error: { type: 'string' },
           },
         },
       },
@@ -109,25 +112,26 @@ export default async function catRoutes(fastify: FastifyInstance) {
     preHandler: [server.authenticate],
     handler: handlers.updateCatHandler,
     onResponse: (request, reply, done) => {
-      fastify.logOperation(request, reply, "Update cat");
+      fastify.logOperation(request, reply, 'Update cat');
       done();
     },
   });
 
+  // delete cat
   fastify.route({
-    method: "DELETE",
-    url: "/:id",
+    method: 'DELETE',
+    url: '/:id',
     schema: {
       params: getCatParamsSchema,
       response: {
         204: {
-          type: "null",
-          description: "No content",
+          type: 'null',
+          description: 'No content',
         },
         404: {
-          type: "object",
+          type: 'object',
           properties: {
-            error: { type: "string" },
+            error: { type: 'string' },
           },
         },
       },
@@ -135,7 +139,7 @@ export default async function catRoutes(fastify: FastifyInstance) {
     preHandler: [server.authenticate],
     handler: handlers.deleteCatHandler,
     onResponse: (request, reply, done) => {
-      fastify.logOperation(request, reply, "Delete cat");
+      fastify.logOperation(request, reply, 'Delete cat');
       done();
     },
   });

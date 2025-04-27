@@ -1,5 +1,5 @@
-import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
+import { FastifyInstance } from 'fastify';
+import fp from 'fastify-plugin';
 
 /**
  * Fastify plugin that adds global validation utilities
@@ -7,7 +7,7 @@ import fp from "fastify-plugin";
 export default fp(
   async function (fastify: FastifyInstance) {
     // Add global validation utilities
-    fastify.decorate("validators", {
+    fastify.decorate('validators', {
       /**
        * Validate email format
        */
@@ -32,15 +32,15 @@ export default fp(
       },
     });
 
-    fastify.log.info("Validation plugin registered");
+    fastify.log.info('Validation plugin registered');
   },
   {
-    name: "validation-plugin",
-  }
+    name: 'validation-plugin',
+  },
 );
 
 // Type extension for Fastify
-declare module "fastify" {
+declare module 'fastify' {
   interface FastifyInstance {
     validators: {
       isValidEmail(email: string): boolean;

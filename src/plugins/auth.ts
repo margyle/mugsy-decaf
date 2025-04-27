@@ -1,10 +1,10 @@
-import fp from "fastify-plugin";
-import jwt from "@fastify/jwt";
-import { FastifyPluginAsync, FastifyRequest } from "fastify";
-import { envConfig } from "../config";
+import fp from 'fastify-plugin';
+import jwt from '@fastify/jwt';
+import { FastifyPluginAsync, FastifyRequest } from 'fastify';
+import { envConfig } from '../config';
 
 // Extend FastifyInstance to include authentication helpers
-declare module "@fastify/jwt" {
+declare module '@fastify/jwt' {
   interface FastifyJWT {
     payload: {
       id: number;
@@ -14,7 +14,7 @@ declare module "@fastify/jwt" {
   }
 }
 
-const authPlugin: FastifyPluginAsync = async (fastify) => {
+const authPlugin: FastifyPluginAsync = async fastify => {
   // Register the JWT plugin
   await fastify.register(jwt, {
     secret: envConfig.JWT_SECRET,
@@ -25,27 +25,27 @@ const authPlugin: FastifyPluginAsync = async (fastify) => {
 
   // Add authenticate decorator
   fastify.decorate(
-    "authenticate",
+    'authenticate',
     async (request: FastifyRequest, reply: any) => {
       try {
         await request.jwtVerify();
       } catch (err) {
-        reply.code(401).send({ error: "Unauthorized access" });
+        reply.code(401).send({ error: 'Unauthorized access' });
       }
-    }
+    },
   );
 
   // Add authorization decorator for role-based access control
-  fastify.decorate("authorizeRoles", (roles: string[]) => {
+  fastify.decorate('authorizeRoles', (roles: string[]) => {
     return async (request: FastifyRequest, reply: any) => {
       try {
         await request.jwtVerify();
 
         if (!roles.includes(request.user.role)) {
-          reply.code(403).send({ error: "Insufficient permissions" });
+          reply.code(403).send({ error: 'Insufficient permissions' });
         }
       } catch (err) {
-        reply.code(401).send({ error: "Unauthorized access" });
+        reply.code(401).send({ error: 'Unauthorized access' });
       }
     };
   });

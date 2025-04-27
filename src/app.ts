@@ -1,8 +1,8 @@
-import Fastify from "fastify";
-import { appConfig } from "./config";
-import plugins from "./plugins";
-import features from "./features";
-import { logger } from "./utils/logger";
+import Fastify from 'fastify';
+import { appConfig } from './config';
+import plugins from './plugins';
+import features from './features';
+import { logger } from './utils/logger';
 
 export function buildApp() {
   // Create Fastify instance with configuration and logger
@@ -20,17 +20,17 @@ export function buildApp() {
   });
 
   // Define root route
-  fastify.get("/", async () => {
+  fastify.get('/', async () => {
     return {
-      name: "DECAF API",
-      description: "Does Every Coffee Action, Friend",
-      version: "1.0.0",
+      name: 'DECAF API',
+      description: 'Does Every Coffee Action, Friend',
+      version: '1.0.0',
     };
   });
 
   // Define health check route
-  fastify.get("/health", async () => {
-    return { status: "ok", timestamp: new Date().toISOString() };
+  fastify.get('/health', async () => {
+    return { status: 'ok', timestamp: new Date().toISOString() };
   });
 
   return fastify;
