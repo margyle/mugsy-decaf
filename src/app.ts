@@ -3,15 +3,18 @@ import { appConfig } from './config';
 import plugins from './plugins';
 import features from './features';
 import { logger } from './utils/logger';
+import dbPlugin, { DbPluginOptions } from './plugins/db';
 
-export function buildApp() {
+export function buildApp(options?: { dbClient?: DbPluginOptions['client'] }) {
   // Create Fastify instance with configuration and logger
   const fastify = Fastify({
     ...appConfig.fastify,
     logger,
   });
 
-  // Register plugins
+  // Register the database plugin (or use provided in-memory client)
+  fastify.register(dbPlugin, { client: options?.dbClient });
+  // Register core plugins
   fastify.register(plugins);
 
   // Register API features with prefix including version

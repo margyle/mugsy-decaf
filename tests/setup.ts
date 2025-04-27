@@ -2,20 +2,43 @@
 // You can add global test setup, mocks, or utility functions here
 
 import { beforeAll, afterAll } from 'vitest';
+import betterSqlite3 from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
+import { join } from 'path';
+import { buildApp } from '../src/app';
+
+declare global {
+  var app: ReturnType<typeof buildApp>;
+  var dbClient: ReturnType<typeof drizzle>;
+  var sqliteDb: ReturnType<typeof betterSqlite3>;
+}
 
 // Global before/after hooks
 beforeAll(async () => {
-  // Setup code to run once before all tests
-  console.log('Setting up tests...');
-
-  // Example: Initializing test database or mocks
+  console.log('Setting up in-memory DB and Fastify app...');
+  // 1) create an in-memory SQLite client
+  const sqliteDbHandle = betterSqlite3(':memory:');
+  // 2) instantiate Drizzle ORM
+  global.sqliteDb = sqliteDbHandle;
+  global.dbClient = drizzle(sqliteDbHandle);
+  // 3) apply all SQL migrations from the drizzle folder
+  migrate(global.dbClient, {
+    migrationsFolder: join(process.cwd(), 'drizzle'),
+  });
+  // 3) build and start Fastify app with test DB
+  global.app = buildApp({ dbClient: global.dbClient });
+  await global.app.ready();
 });
 
 afterAll(async () => {
-  // Cleanup code to run once after all tests
-  console.log('Cleaning up after tests...');
-
-  // Example: Close connections, clear mocks, etc.
+  console.log('Tearing down Fastify app...');
+  if (global.app) {
+    await global.app.close();
+  }
+  if (global.sqliteDb) {
+    global.sqliteDb.close();
+  }
 });
 
 // Optionally mock global dependencies here
