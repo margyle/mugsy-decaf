@@ -9,9 +9,9 @@ const swaggerPlugin: FastifyPluginAsync = async fastify => {
   await fastify.register(swagger, {
     swagger: {
       info: {
-        title: 'DECAF API',
+        title: 'Mugsy: DECAF API',
         description: 'Does Every Coffee Action, Friend - API documentation',
-        version: '1.0.0',
+        version: '0.1.0',
       },
       schemes:
         envConfig.NODE_ENV === 'production' ? ['https'] : ['http', 'https'],

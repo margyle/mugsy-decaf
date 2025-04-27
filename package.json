@@ -1,6 +1,6 @@
 {
   "name": "decaf-backend",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Does Every Coffee Action, Friend - Fastify TypeScript Backend",
   "main": "dist/server.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "@fastify/jwt": "^8.0.0",
     "@fastify/swagger": "^8.14.0",
     "@fastify/swagger-ui": "^2.1.0",
+    "@scalar/fastify-api-reference": "^1.28.26",
     "@types/uuid": "^10.0.0",
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^9.4.1",
