@@ -62,11 +62,9 @@ The server will be available at http://localhost:3000 with hot reloading enabled
 ├── db/                   # Database setup with Drizzle ORM
 ├── features/             # Feature modules (auth, cats, etc.)
 │   ├── feature-name/     # Each feature has its own directory
-│   │   ├── schema.ts     # JSON Schema validation
-│   │   ├── routes.ts     # Route definitions
-│   │   ├── handlers.ts   # Request handlers
-│   │   ├── service.ts    # Business logic
-│   │   ├── hooks.ts      # Pre/post hooks
+│   │   ├── schema.ts     # JSON Schema for requests and responses
+│   │   ├── routes.ts     # Route definitions and API endpoints
+│   │   ├── handlers.ts   # Request handlers with business logic
 │   │   └── index.ts      # Feature registration
 ├── plugins/              # Fastify plugins (auth, cors, etc.)
 ├── types/                # TypeScript type definitions
@@ -102,7 +100,7 @@ Manages environment-specific settings:
 Usage:
 
 ```typescript
-import { envConfig, appConfig, dbConfig } from "./config";
+import { envConfig, appConfig, dbConfig } from './config';
 
 // Access configuration values
 const port = envConfig.PORT;
@@ -132,7 +130,7 @@ Each feature is isolated and contains everything it needs:
 Adding a new feature:
 
 1. Create a directory under `src/features/`
-2. Implement schema, routes, handlers, and service
+2. Implement schema.ts (request/response schemas), routes.ts, and handlers.ts
 3. Register the feature in `src/features/index.ts`
 
 ### Plugins (`src/plugins/`)
@@ -175,7 +173,7 @@ For detailed authentication documentation, see [docs/authentication.md](docs/aut
 # Register a user
 curl -X POST http://localhost:3000/api/v1/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "email": "test@example.com", "password": "password123"}'
+  -d '{"username": "testuser", "password": "password123"}'
 
 # Login to get a token
 curl -X POST http://localhost:3000/api/v1/auth/login \
@@ -194,11 +192,10 @@ API documentation is available at `/documentation` in development mode.
 ## Contributing
 
 1. Create a feature branch (`git checkout -b feature/amazing-feature`)
-2. Make changes and add tests
-3. Run tests (`npm test`)
-4. Commit your changes (`git commit -m 'Add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
+2. Make changes
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
