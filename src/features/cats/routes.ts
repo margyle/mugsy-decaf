@@ -2,6 +2,9 @@ import { FastifyInstance } from 'fastify';
 import * as handlers from './handlers';
 import {
   catSchema,
+  catResponseSchema,
+  catsArrayResponseSchema,
+  errorResponseSchema,
   getCatParamsSchema,
   createCatBodySchema,
   updateCatBodySchema,
@@ -17,8 +20,11 @@ export default async function catRoutes(fastify: FastifyInstance) {
   // Cast fastify to include our custom authenticate decorator
   const server = fastify as FastifyInstanceWithAuth;
 
-  // Register the cat schema
+  // Register all schemas
   fastify.addSchema(catSchema);
+  fastify.addSchema(catResponseSchema);
+  fastify.addSchema(catsArrayResponseSchema);
+  fastify.addSchema(errorResponseSchema);
 
   // get all cats
   fastify.route({
@@ -26,10 +32,7 @@ export default async function catRoutes(fastify: FastifyInstance) {
     url: '/',
     schema: {
       response: {
-        200: {
-          type: 'array',
-          items: { $ref: 'cat#' },
-        },
+        200: { $ref: 'catsArrayResponse#' },
       },
     },
     handler: handlers.getAllCatsHandler,
@@ -46,13 +49,8 @@ export default async function catRoutes(fastify: FastifyInstance) {
     schema: {
       params: getCatParamsSchema,
       response: {
-        200: { $ref: 'cat#' },
-        404: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' },
-          },
-        },
+        200: { $ref: 'catResponse#' },
+        404: { $ref: 'errorResponse#' },
       },
     },
     handler: handlers.getCatByIdHandler,
@@ -69,13 +67,8 @@ export default async function catRoutes(fastify: FastifyInstance) {
     schema: {
       body: createCatBodySchema,
       response: {
-        201: { $ref: 'cat#' },
-        400: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' },
-          },
-        },
+        201: { $ref: 'catResponse#' },
+        400: { $ref: 'errorResponse#' },
       },
     },
     preHandler: [server.authenticate],
@@ -94,19 +87,9 @@ export default async function catRoutes(fastify: FastifyInstance) {
       params: getCatParamsSchema,
       body: updateCatBodySchema,
       response: {
-        200: { $ref: 'cat#' },
-        400: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' },
-          },
-        },
-        404: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' },
-          },
-        },
+        200: { $ref: 'catResponse#' },
+        400: { $ref: 'errorResponse#' },
+        404: { $ref: 'errorResponse#' },
       },
     },
     preHandler: [server.authenticate],
@@ -128,12 +111,7 @@ export default async function catRoutes(fastify: FastifyInstance) {
           type: 'null',
           description: 'No content',
         },
-        404: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' },
-          },
-        },
+        404: { $ref: 'errorResponse#' },
       },
     },
     preHandler: [server.authenticate],

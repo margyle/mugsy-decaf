@@ -9,6 +9,7 @@ const ALLOWED_CAT_TYPES = [
   'nugget',
 ];
 
+// Cat entity schema
 export const catSchema = {
   $id: 'cat',
   type: 'object',
@@ -26,6 +27,32 @@ export const catSchema = {
   },
 };
 
+// Response schemas
+export const catResponseSchema = {
+  $id: 'catResponse',
+  type: 'object',
+  properties: {
+    id: { type: 'integer' },
+    name: { type: 'string' },
+    type: { type: 'string' },
+  },
+};
+
+export const catsArrayResponseSchema = {
+  $id: 'catsArrayResponse',
+  type: 'array',
+  items: { $ref: 'catResponse#' },
+};
+
+export const errorResponseSchema = {
+  $id: 'errorResponse',
+  type: 'object',
+  properties: {
+    error: { type: 'string' },
+  },
+};
+
+// Request schemas
 export const getCatParamsSchema = {
   type: 'object',
   required: ['id'],
