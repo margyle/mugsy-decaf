@@ -24,7 +24,7 @@ export const userResponseSchema = {
   $id: 'userResponse',
   type: 'object',
   properties: {
-    id: { type: 'integer' },
+    id: { type: 'string' },
     username: { type: 'string' },
   },
 };
@@ -36,7 +36,7 @@ export const authResponseSchema = {
     user: {
       type: 'object',
       properties: {
-        id: { type: 'integer' },
+        id: { type: 'string' },
         username: { type: 'string' },
         role: { type: 'string' },
       },

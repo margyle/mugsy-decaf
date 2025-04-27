@@ -19,10 +19,10 @@ export const recipes = sqliteTable('recipes', {
   grind_size: text('grind_size'),
   brew_time: integer('brew_time').notNull(),
 
-  createdAt: integer('created_at', { mode: 'timestamp' })
+  createdAt: text('created_at')
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
+  updatedAt: text('updated_at')
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
@@ -31,16 +31,16 @@ export const recipe_steps = sqliteTable('recipe_steps', {
   id: text('id').primaryKey(),
   recipe_id: text('recipe_id')
     .notNull()
-    .references(() => recipes.id),
+    .references(() => recipes.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
   step_order: integer('step_order').notNull(),
   duration_sec: integer('duration_sec'),
-  command: text('payload'), // JSON command to be sent to operator
-  command_type: text('command_type'), // TODO: figure out how to store type: moves, grind, pour, etc
+  command_type: text('command_type').notNull(), // Type of command: move, grind, pour, etc.
+  command_parameter: integer('command_parameter'), // Integer parameter for the command
 
-  createdAt: integer('created_at', { mode: 'timestamp' })
+  createdAt: text('created_at')
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
+  updatedAt: text('updated_at')
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
