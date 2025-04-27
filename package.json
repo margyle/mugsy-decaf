@@ -16,7 +16,10 @@
     "db:studio": "drizzle-kit studio",
     "start:dev": "NODE_ENV=development npm start",
     "start:staging": "NODE_ENV=staging npm start",
-    "start:prod": "NODE_ENV=production npm start"
+    "start:prod": "NODE_ENV=production npm start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.0",

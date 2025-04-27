@@ -4,10 +4,12 @@ module.exports = defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    setupFiles: './test/setup.ts', // optional
+    setupFiles: './tests/setup.ts',
+    include: ['./tests/**/*.test.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
+      exclude: ['node_modules/', 'tests/setup.ts'],
     },
   },
 });
