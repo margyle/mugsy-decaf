@@ -4,6 +4,7 @@ import authPlugin from './auth';
 import corsPlugin from './cors';
 import helmetPlugin from './helmet';
 import swaggerPlugin from './swagger';
+import scalarPlugin from './scalar';
 import errorHandler from './errorHandler';
 import validationPlugin from './validation';
 import loggerPlugin from './logger';
@@ -17,6 +18,7 @@ const plugins: FastifyPluginAsync = async fastify => {
   await fastify.register(validationPlugin); // Register validation before auth
   await fastify.register(authPlugin);
   await fastify.register(swaggerPlugin);
+  await fastify.register(scalarPlugin); // Register Scalar after Swagger
 };
 
 export default fp(plugins);
