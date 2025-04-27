@@ -1,6 +1,6 @@
 # DECAF - Does Every Coffee Action, Friend
 
-A modern Fastify TypeScript backend for coffee robot systems, providing robust API services with best practices for security, authentication, and database management.
+A Fastify TypeScript backend for Mugsy
 
 ## Features
 
