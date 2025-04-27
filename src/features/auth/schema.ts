@@ -1,3 +1,4 @@
+// Request schemas
 export const loginSchema = {
   $id: 'login',
   type: 'object',
@@ -15,5 +16,39 @@ export const registerSchema = {
   properties: {
     username: { type: 'string', minLength: 3, maxLength: 50 },
     password: { type: 'string', minLength: 9 },
+  },
+};
+
+// Response schemas
+export const userResponseSchema = {
+  $id: 'userResponse',
+  type: 'object',
+  properties: {
+    id: { type: 'integer' },
+    username: { type: 'string' },
+  },
+};
+
+export const authResponseSchema = {
+  $id: 'authResponse',
+  type: 'object',
+  properties: {
+    user: {
+      type: 'object',
+      properties: {
+        id: { type: 'integer' },
+        username: { type: 'string' },
+        role: { type: 'string' },
+      },
+    },
+    token: { type: 'string' },
+  },
+};
+
+export const errorResponseSchema = {
+  $id: 'authErrorResponse',
+  type: 'object',
+  properties: {
+    error: { type: 'string' },
   },
 };

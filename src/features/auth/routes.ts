@@ -1,11 +1,20 @@
 import { FastifyInstance } from 'fastify';
 import * as handlers from './handlers';
-import { loginSchema, registerSchema } from './schema';
+import {
+  loginSchema,
+  registerSchema,
+  userResponseSchema,
+  authResponseSchema,
+  errorResponseSchema,
+} from './schema';
 
 export default async function authRoutes(fastify: FastifyInstance) {
   // Register schemas
   fastify.addSchema(loginSchema);
   fastify.addSchema(registerSchema);
+  fastify.addSchema(userResponseSchema);
+  fastify.addSchema(authResponseSchema);
+  fastify.addSchema(errorResponseSchema);
 
   // Login route
   fastify.route({
@@ -14,26 +23,8 @@ export default async function authRoutes(fastify: FastifyInstance) {
     schema: {
       body: { $ref: 'login#' },
       response: {
-        200: {
-          type: 'object',
-          properties: {
-            user: {
-              type: 'object',
-              properties: {
-                id: { type: 'integer' },
-                username: { type: 'string' },
-                role: { type: 'string' },
-              },
-            },
-            token: { type: 'string' },
-          },
-        },
-        401: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' },
-          },
-        },
+        200: { $ref: 'authResponse#' },
+        401: { $ref: 'authErrorResponse#' },
       },
     },
     handler: handlers.loginHandler,
@@ -46,26 +37,9 @@ export default async function authRoutes(fastify: FastifyInstance) {
     schema: {
       body: { $ref: 'register#' },
       response: {
-        201: {
-          type: 'object',
-          properties: {
-            user: {
-              type: 'object',
-              properties: {
-                id: { type: 'integer' },
-                username: { type: 'string' },
-                role: { type: 'string' },
-              },
-            },
-            token: { type: 'string' },
-          },
-        },
-        409: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' },
-          },
-        },
+        201: { $ref: 'userResponse#' },
+        409: { $ref: 'authErrorResponse#' },
+        500: { $ref: 'authErrorResponse#' },
       },
     },
     handler: handlers.registerHandler,
