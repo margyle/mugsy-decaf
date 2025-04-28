@@ -5,8 +5,8 @@ import { cats } from '../../src/db/schema/cats';
 beforeAll(async () => {
   await global.dbClient.run(sql`DELETE FROM cats`);
   await global.dbClient.insert(cats).values([
-    { id: '1', name: 'Mittens', type: 'tabby' },
-    { id: '2', name: 'Garfield', type: 'orange' },
+    { id: '1', name: 'Franky', type: 'golden nugget' },
+    { id: '2', name: 'Boofus', type: 'anxiety void boy' },
   ]);
 });
 
@@ -20,8 +20,8 @@ describe('Cats API (integration)', () => {
     const res = await global.app.inject({ method: 'GET', url: '/api/v1/cats' });
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.payload)).toEqual([
-      { id: '1', name: 'Mittens', type: 'tabby' },
-      { id: '2', name: 'Garfield', type: 'orange' },
+      { id: '1', name: 'Franky', type: 'golden nugget' },
+      { id: '2', name: 'Boofus', type: 'anxiety void boy' },
     ]);
   });
 
@@ -33,8 +33,8 @@ describe('Cats API (integration)', () => {
     expect(res.statusCode).toBe(200);
     expect(JSON.parse(res.payload)).toEqual({
       id: '1',
-      name: 'Mittens',
-      type: 'tabby',
+      name: 'Franky',
+      type: 'golden nugget',
     });
   });
 

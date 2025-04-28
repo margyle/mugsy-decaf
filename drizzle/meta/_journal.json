@@ -8,6 +8,13 @@
       "when": 1745769043890,
       "tag": "0000_wandering_king_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1745799601204,
+      "tag": "0001_slim_sprite",
+      "breakpoints": true
     }
   ]
 }

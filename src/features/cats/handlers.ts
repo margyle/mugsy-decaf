@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { cats, Cat, NewCat } from '../../db/schema/cats';
+import { cats } from '../../db/schema/cats';
 import { eq, sql } from 'drizzle-orm';
 import { NotFoundError } from '../../utils/errors';
 import { v4 as uuidv4 } from 'uuid';

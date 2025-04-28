@@ -1,7 +1,6 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { db } from '../../db';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { recipes, recipe_steps } from '../../db/schema/recipes';
-import { eq, sql, and } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { NotFoundError } from '../../utils/errors';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -52,10 +51,11 @@ interface UpdateRecipeStepBody {
 
 // Recipe Handlers
 export async function getAllRecipesHandler(
+  this: FastifyInstance,
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const allRecipes = await db.select().from(recipes);
+  const allRecipes = await this.db.select().from(recipes);
 
   // Format response to match schema
   const formattedRecipes = allRecipes.map(recipe => ({
@@ -74,13 +74,14 @@ export async function getAllRecipesHandler(
 }
 
 export async function getRecipeByIdHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams }>,
   reply: FastifyReply,
 ) {
   const { id } = request.params;
 
   // Get recipe
-  const result = await db.select().from(recipes).where(eq(recipes.id, id));
+  const result = await this.db.select().from(recipes).where(eq(recipes.id, id));
 
   if (!result[0]) {
     throw NotFoundError(`Recipe with ID ${id} not found`);
@@ -88,23 +89,6 @@ export async function getRecipeByIdHandler(
 
   const recipe = result[0];
 
-  // Get recipe steps
-  const stepsResult = await db
-    .select()
-    .from(recipe_steps)
-    .where(eq(recipe_steps.recipe_id, id))
-    .orderBy(recipe_steps.step_order);
-
-  // Format the steps
-  const steps = stepsResult.map(step => ({
-    id: step.id,
-    step_order: step.step_order,
-    duration_sec: step.duration_sec,
-    command_parameter: step.command_parameter,
-    command_type: step.command_type,
-  }));
-
-  // Return recipe with steps
   return reply.code(200).send({
     id: recipe.id,
     created_by: recipe.created_by,
@@ -115,20 +99,16 @@ export async function getRecipeByIdHandler(
     water_temperature: recipe.water_temperature,
     grind_size: recipe.grind_size,
     brew_time: recipe.brew_time,
-    steps,
   });
 }
 
 export async function createRecipeHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Body: CreateRecipeBody }>,
   reply: FastifyReply,
 ) {
   const userId = request.user?.id || null;
-
-  // Generate UUID for the recipe
   const recipeId = uuidv4();
-
-  // Prepare recipe data
   const recipeData = {
     id: recipeId,
     created_by: userId,
@@ -136,7 +116,7 @@ export async function createRecipeHandler(
   };
 
   // Insert recipe
-  const result = await db.insert(recipes).values(recipeData).returning();
+  const result = await this.db.insert(recipes).values(recipeData).returning();
   const recipe = result[0];
 
   return reply.code(201).send({
@@ -153,6 +133,7 @@ export async function createRecipeHandler(
 }
 
 export async function updateRecipeHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams; Body: UpdateRecipeBody }>,
   reply: FastifyReply,
 ) {
@@ -160,7 +141,7 @@ export async function updateRecipeHandler(
   const userId = request.user?.id || null;
 
   // Check if recipe exists
-  const existingRecipe = await db
+  const existingRecipe = await this.db
     .select()
     .from(recipes)
     .where(eq(recipes.id, id));
@@ -182,7 +163,7 @@ export async function updateRecipeHandler(
     updatedAt: sql`CURRENT_TIMESTAMP`,
   };
 
-  const result = await db
+  const result = await this.db
     .update(recipes)
     .set(updateData)
     .where(eq(recipes.id, id))
@@ -204,6 +185,7 @@ export async function updateRecipeHandler(
 }
 
 export async function deleteRecipeHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams }>,
   reply: FastifyReply,
 ) {
@@ -211,7 +193,7 @@ export async function deleteRecipeHandler(
   const userId = request.user?.id || null;
 
   // Check if recipe exists
-  const existingRecipe = await db
+  const existingRecipe = await this.db
     .select()
     .from(recipes)
     .where(eq(recipes.id, id));
@@ -228,23 +210,24 @@ export async function deleteRecipeHandler(
   }
 
   // Delete associated recipe steps first
-  await db.delete(recipe_steps).where(eq(recipe_steps.recipe_id, id));
+  await this.db.delete(recipe_steps).where(eq(recipe_steps.recipe_id, id));
 
   // Delete recipe
-  await db.delete(recipes).where(eq(recipes.id, id));
+  await this.db.delete(recipes).where(eq(recipes.id, id));
 
   return reply.code(204).send();
 }
 
 // Recipe Step Handlers
 export async function getRecipeStepsHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams }>,
   reply: FastifyReply,
 ) {
   const { id } = request.params;
 
   // Check if recipe exists
-  const existingRecipe = await db
+  const existingRecipe = await this.db
     .select()
     .from(recipes)
     .where(eq(recipes.id, id));
@@ -254,7 +237,7 @@ export async function getRecipeStepsHandler(
   }
 
   // Get steps
-  const stepsResult = await db
+  const stepsResult = await this.db
     .select()
     .from(recipe_steps)
     .where(eq(recipe_steps.recipe_id, id))
@@ -274,13 +257,14 @@ export async function getRecipeStepsHandler(
 }
 
 export async function getRecipeStepByIdHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeStepParams }>,
   reply: FastifyReply,
 ) {
   const { id } = request.params;
 
   // Get step
-  const result = await db
+  const result = await this.db
     .select()
     .from(recipe_steps)
     .where(eq(recipe_steps.id, id));
@@ -302,6 +286,7 @@ export async function getRecipeStepByIdHandler(
 }
 
 export async function createRecipeStepHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Body: CreateRecipeStepBody }>,
   reply: FastifyReply,
 ) {
@@ -309,7 +294,7 @@ export async function createRecipeStepHandler(
   const userId = request.user?.id || null;
 
   // Check if recipe exists
-  const existingRecipe = await db
+  const existingRecipe = await this.db
     .select()
     .from(recipes)
     .where(eq(recipes.id, recipe_id));
@@ -335,7 +320,10 @@ export async function createRecipeStepHandler(
   };
 
   // Insert step
-  const result = await db.insert(recipe_steps).values(stepData).returning();
+  const result = await this.db
+    .insert(recipe_steps)
+    .values(stepData)
+    .returning();
   const step = result[0];
 
   return reply.code(201).send({
@@ -349,6 +337,7 @@ export async function createRecipeStepHandler(
 }
 
 export async function updateRecipeStepHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{
     Params: RecipeStepParams;
     Body: UpdateRecipeStepBody;
@@ -359,7 +348,7 @@ export async function updateRecipeStepHandler(
   const userId = request.user?.id || null;
 
   // Get step and associated recipe
-  const stepResult = await db
+  const stepResult = await this.db
     .select()
     .from(recipe_steps)
     .where(eq(recipe_steps.id, id));
@@ -371,7 +360,7 @@ export async function updateRecipeStepHandler(
   const step = stepResult[0];
 
   // Check if recipe exists and user has permission
-  const recipeResult = await db
+  const recipeResult = await this.db
     .select()
     .from(recipes)
     .where(eq(recipes.id, step.recipe_id));
@@ -392,7 +381,7 @@ export async function updateRecipeStepHandler(
     updatedAt: sql`CURRENT_TIMESTAMP`,
   };
 
-  const result = await db
+  const result = await this.db
     .update(recipe_steps)
     .set(updateData)
     .where(eq(recipe_steps.id, id))
@@ -411,6 +400,7 @@ export async function updateRecipeStepHandler(
 }
 
 export async function deleteRecipeStepHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeStepParams }>,
   reply: FastifyReply,
 ) {
@@ -418,7 +408,7 @@ export async function deleteRecipeStepHandler(
   const userId = request.user?.id || null;
 
   // Get step and associated recipe
-  const stepResult = await db
+  const stepResult = await this.db
     .select()
     .from(recipe_steps)
     .where(eq(recipe_steps.id, id));
@@ -430,7 +420,7 @@ export async function deleteRecipeStepHandler(
   const step = stepResult[0];
 
   // Check if recipe exists and user has permission
-  const recipeResult = await db
+  const recipeResult = await this.db
     .select()
     .from(recipes)
     .where(eq(recipes.id, step.recipe_id));
@@ -446,7 +436,7 @@ export async function deleteRecipeStepHandler(
   }
 
   // Delete step
-  await db.delete(recipe_steps).where(eq(recipe_steps.id, id));
+  await this.db.delete(recipe_steps).where(eq(recipe_steps.id, id));
 
   return reply.code(204).send();
 }
