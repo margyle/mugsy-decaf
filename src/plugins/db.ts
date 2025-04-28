@@ -1,6 +1,7 @@
 import fp from 'fastify-plugin';
 import betterSqlite3 from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { dbConfig } from '../config';
 
 // tell Fastify about our decorator
 declare module 'fastify' {
@@ -16,7 +17,7 @@ export interface DbPluginOptions {
 }
 
 export default fp(async (fastify, opts: DbPluginOptions) => {
-  // Use provided client (for tests) or create a new SQLite file-based client
-  const client = opts.client ?? drizzle(betterSqlite3('./data.sqlite'));
+  // Use provided client (for tests) or create a new SQLite file-based client at dbConfig.url
+  const client = opts.client ?? drizzle(betterSqlite3(dbConfig.url));
   fastify.decorate('db', client);
 });
