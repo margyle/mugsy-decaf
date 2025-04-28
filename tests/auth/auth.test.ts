@@ -43,7 +43,6 @@ describe('Auth API (integration)', () => {
       url: '/api/v1/auth/register',
       payload: { username: 'testuser', password: 'password123' },
     });
-    console.log(`foo: ${res}`);
     expect(res.statusCode).toBe(409);
     expect(JSON.parse(res.payload)).toEqual({
       error: 'Username already exists',
