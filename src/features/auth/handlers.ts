@@ -1,6 +1,5 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { db } from '../../db';
-import { users, User } from '../../db/schema/users';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { users } from '../../db/schema/users';
 import { eq } from 'drizzle-orm';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
@@ -40,13 +39,14 @@ async function verifyPassword(
 }
 
 export async function loginHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Body: LoginRequest }>,
   reply: FastifyReply,
 ) {
   const { username, password } = request.body;
 
   // Find user by username
-  const result = await db
+  const result = await this.db
     .select()
     .from(users)
     .where(eq(users.username, username));
@@ -81,9 +81,19 @@ export async function loginHandler(
 }
 
 export async function registerHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Body: RegisterRequest }>,
   reply: FastifyReply,
 ) {
+  // Prevent duplicate username registration
+  const existingUser = await this.db
+    .select()
+    .from(users)
+    .where(eq(users.username, request.body.username));
+  if (existingUser[0]) {
+    return reply.code(409).send({ error: 'Username already exists' });
+  }
+
   try {
     // Hash password
     const hashedPassword = await hashPassword(request.body.password);
@@ -98,7 +108,7 @@ export async function registerHandler(
       password: hashedPassword,
     };
 
-    const result = await db.insert(users).values(userData).returning();
+    const result = await this.db.insert(users).values(userData).returning();
     const user = result[0];
 
     // Return the user data without a token for registration

@@ -16,7 +16,7 @@ A Fastify TypeScript backend for Mugsy
 
 ### Prerequisites
 
-- Node.js 18.x or higher
+- Node.js 20.x or higher
 - npm or yarn
 
 ### Installation
@@ -86,6 +86,27 @@ The server will be available at http://localhost:3000 with hot reloading enabled
 | `npm run lint`        | Run ESLint                                   |
 | `npm run lint:fix`    | Fix ESLint issues                            |
 | `npm run format`      | Format code with Prettier                    |
+
+# Testing
+
+Tests use Vitest, Fastify's `inject`, and an in-memory SQLite DB with Drizzle migrations applied automatically via `tests/setup.ts`.
+
+1. (Optional) Create a `.env.test` file for overrides:
+   ```bash
+   cp .env.example .env.test
+   ```
+2. Run all tests:
+   ```bash
+   npm test
+   ```
+3. Run tests in watch mode:
+   ```bash
+   npm run test:watch
+   ```
+4. Generate a coverage report:
+   ```bash
+   npm run test:coverage
+   ```
 
 ## Key Components
 

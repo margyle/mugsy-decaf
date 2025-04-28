@@ -1,6 +1,5 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { db } from '../../db';
-import { cats, Cat, NewCat } from '../../db/schema/cats';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { cats } from '../../db/schema/cats';
 import { eq, sql } from 'drizzle-orm';
 import { NotFoundError } from '../../utils/errors';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,10 +19,11 @@ interface UpdateCatBody {
 }
 
 export async function getAllCatsHandler(
+  this: FastifyInstance,
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const allCats = await db.select().from(cats);
+  const allCats = await this.db.select().from(cats);
   const simplifiedCats = allCats.map(cat => ({
     id: cat.id,
     name: cat.name,
@@ -33,12 +33,13 @@ export async function getAllCatsHandler(
 }
 
 export async function getCatByIdHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: CatParams }>,
   reply: FastifyReply,
 ) {
   const { id } = request.params;
 
-  const result = await db.select().from(cats).where(eq(cats.id, id));
+  const result = await this.db.select().from(cats).where(eq(cats.id, id));
 
   if (!result[0]) {
     throw NotFoundError(`Cat with ID ${id} not found`);
@@ -53,6 +54,7 @@ export async function getCatByIdHandler(
 }
 
 export async function createCatHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Body: CreateCatBody }>,
   reply: FastifyReply,
 ) {
@@ -65,7 +67,7 @@ export async function createCatHandler(
     ...request.body,
   };
 
-  const result = await db.insert(cats).values(catData).returning();
+  const result = await this.db.insert(cats).values(catData).returning();
   const cat = result[0];
 
   return reply.code(201).send({
@@ -76,13 +78,14 @@ export async function createCatHandler(
 }
 
 export async function updateCatHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: CatParams; Body: UpdateCatBody }>,
   reply: FastifyReply,
 ) {
   const { id } = request.params;
 
   // First check if the cat exists
-  const existingCat = await db.select().from(cats).where(eq(cats.id, id));
+  const existingCat = await this.db.select().from(cats).where(eq(cats.id, id));
 
   if (!existingCat[0]) {
     throw NotFoundError(`Cat with ID ${id} not found`);
@@ -94,7 +97,7 @@ export async function updateCatHandler(
     updatedAt: sql`CURRENT_TIMESTAMP`,
   };
 
-  const result = await db
+  const result = await this.db
     .update(cats)
     .set(updateData)
     .where(eq(cats.id, id))
@@ -109,18 +112,19 @@ export async function updateCatHandler(
 }
 
 export async function deleteCatHandler(
+  this: FastifyInstance,
   request: FastifyRequest<{ Params: CatParams }>,
   reply: FastifyReply,
 ) {
   const { id } = request.params;
 
   // First check if the cat exists
-  const existingCat = await db.select().from(cats).where(eq(cats.id, id));
+  const existingCat = await this.db.select().from(cats).where(eq(cats.id, id));
 
   if (!existingCat[0]) {
     throw NotFoundError(`Cat with ID ${id} not found`);
   }
 
-  await db.delete(cats).where(eq(cats.id, id));
+  await this.db.delete(cats).where(eq(cats.id, id));
   return reply.code(204).send();
 }

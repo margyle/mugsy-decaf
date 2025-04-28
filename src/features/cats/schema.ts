@@ -66,11 +66,7 @@ export const createCatBodySchema = {
   required: ['name', 'type'],
   properties: {
     name: { type: 'string', minLength: 1, maxLength: 100 },
-    type: {
-      type: 'string',
-      enum: ALLOWED_CAT_TYPES,
-      description: 'Type of cat breed',
-    },
+    type: { type: 'string', description: 'Type of cat breed' },
   },
 };
 
@@ -78,10 +74,6 @@ export const updateCatBodySchema = {
   type: 'object',
   properties: {
     name: { type: 'string', minLength: 1, maxLength: 100 },
-    type: {
-      type: 'string',
-      enum: ALLOWED_CAT_TYPES,
-      description: 'Type of cat breed',
-    },
+    type: { type: 'string', description: 'Type of cat breed' },
   },
 };
