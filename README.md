@@ -75,21 +75,26 @@ The server will be available at http://localhost:3000 with hot reloading enabled
 
 ## Development Commands
 
-| Command               | Description                                  |
-| --------------------- | -------------------------------------------- |
-| `npm run dev`         | Start the development server with hot reload |
-| `npm run build`       | Build the application for production         |
-| `npm run start`       | Start the production server                  |
-| `npm run db:generate` | Generate database migrations                 |
-| `npm run db:migrate`  | Apply database migrations                    |
-| `npm run db:studio`   | Open Drizzle Studio UI (port 8000)           |
-| `npm run lint`        | Run ESLint                                   |
-| `npm run lint:fix`    | Fix ESLint issues                            |
-| `npm run format`      | Format code with Prettier                    |
+| Command                 | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| `npm run dev`           | Start the development server with hot reload |
+| `npm run build`         | Build the application for production         |
+| `npm run start`         | Start the production server                  |
+| `npm run db:generate`   | Generate database migrations                 |
+| `npm run db:migrate`    | Apply database migrations                    |
+| `npm run db:studio`     | Open Drizzle Studio UI (port 8000)           |
+| `npm run lint`          | Run ESLint                                   |
+| `npm run lint:fix`      | Fix ESLint issues                            |
+| `npm run format`        | Format code with Prettier                    |
+| `npm test`              | Run the full test suite                      |
+| `npm run test:watch`    | Run tests in watch mode                      |
+| `npm run test:coverage` | Generate test coverage report                |
 
 # Testing
 
 Tests use Vitest, Fastify's `inject`, and an in-memory SQLite DB with Drizzle migrations applied automatically via `tests/setup.ts`.
+
+Note: the in-memory DB is created directly in `tests/setup.ts` (using `:memory:`) and passed into `buildApp`—so you don't need a `.env.test` for the database setup.
 
 1. (Optional) Create a `.env.test` file for overrides:
    ```bash
