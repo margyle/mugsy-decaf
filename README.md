@@ -54,6 +54,8 @@ A Fastify TypeScript backend for Mugsy
 
 The server will be available at http://localhost:3000 with hot reloading enabled.
 
+
+
 ## Project Structure
 
 ```
@@ -310,6 +312,26 @@ curl -X POST http://localhost:3000/api/v1/recipes/steps \
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
+## Branch Protection
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+To ensure code quality and a smooth workflow, we enforce these protections in GitHub:
+
+### Protected Branches
+
+- `dev` and `main` are both protected.  
+- Direct pushes are disabled—all changes must go through Pull Requests.
+
+### Status Checks
+
+- Every PR to `dev` runs the **CI → Lint → Build → Test w/ Coverage** workflow.  
+- Every PR to `main` runs the **Ensure only-dev → Test w/ Coverage** workflow, and also verifies the source branch is `dev`.  
+- Merging is only allowed when these checks pass.
+
+### Merge Strategy
+
+- Squash merges are enforced for a clean history.  
+- (Optional) **Require branches to be up to date before merging** is enabled so PRs always test against the latest code.
+
+### Pull Request Reviews
+
+- Require at least one approval before merging.
