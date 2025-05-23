@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "3f51cf63-02fb-445c-9462-a5facc2bf433",
+  "id": "5cf41821-37af-4b39-a7b6-01168426eafe",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "cats": {
@@ -69,6 +69,13 @@
         },
         "password": {
           "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "pin": {
+          "name": "pin",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
