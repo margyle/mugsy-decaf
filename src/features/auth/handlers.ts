@@ -95,7 +95,8 @@ export async function loginHandler(
 
     if (!isValidPinFormat(pinString)) {
       return reply.code(400).send({
-        error: 'PIN must be exactly 8 digits',
+        error: 'Validation Error',
+        message: 'The request data is invalid',
       });
     }
   }
@@ -157,7 +158,8 @@ export async function registerHandler(
 
   if (!isValidPinFormat(pinString)) {
     return reply.code(400).send({
-      error: 'PIN must be exactly 8 digits',
+      error: 'Validation Error',
+      message: 'The request data is invalid',
     });
   }
 
