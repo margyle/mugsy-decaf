@@ -88,11 +88,16 @@ export async function loginHandler(
     });
   }
 
-  // Validate PIN format if provided
-  if (pin && !isValidPinFormat(pin)) {
-    return reply.code(400).send({
-      error: 'PIN must be exactly 8 digits',
-    });
+  // Validate PIN type and format if provided
+  if (pin) {
+    // Convert to string to handle both string and number inputs
+    const pinString = String(pin);
+
+    if (!isValidPinFormat(pinString)) {
+      return reply.code(400).send({
+        error: 'PIN must be exactly 8 digits',
+      });
+    }
   }
 
   // Find user by username
@@ -112,7 +117,9 @@ export async function loginHandler(
   if (password) {
     credentialsValid = await verifyPassword(password, user.password);
   } else if (pin) {
-    credentialsValid = await verifyPin(pin, user.pin);
+    // Convert to string to handle both string and number inputs
+    const pinString = String(pin);
+    credentialsValid = await verifyPin(pinString, user.pin);
   }
 
   if (!credentialsValid) {
@@ -144,8 +151,11 @@ export async function registerHandler(
 ) {
   const { username, password, pin } = request.body;
 
-  // Validate PIN format
-  if (!isValidPinFormat(pin)) {
+  // Validate PIN type and format
+  // Convert to string to handle both string and number inputs
+  const pinString = String(pin);
+
+  if (!isValidPinFormat(pinString)) {
     return reply.code(400).send({
       error: 'PIN must be exactly 8 digits',
     });
@@ -163,7 +173,7 @@ export async function registerHandler(
   try {
     // Hash password and PIN
     const hashedPassword = await hashPassword(password);
-    const hashedPin = await hashPin(pin);
+    const hashedPin = await hashPin(pinString);
 
     // Generate UUID for user
     const userId = uuidv4();

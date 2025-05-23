@@ -77,6 +77,38 @@ describe('Auth API (integration)', () => {
       expect(body.message).toBe('The request data is invalid');
     });
 
+    it('POST /auth/register with numeric PIN → 201', async () => {
+      const res = await global.app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: {
+          username: 'numpin',
+          password: 'password123',
+          pin: 12345678, // number gets converted to string
+        },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload);
+      expect(body).toHaveProperty('id');
+      expect(body.username).toBe('numpin');
+    });
+
+    it('POST /auth/register with leading zero PIN → 201', async () => {
+      const res = await global.app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: {
+          username: 'leadingzero',
+          password: 'password123',
+          pin: '01234567', // leading zero preserved
+        },
+      });
+      expect(res.statusCode).toBe(201);
+      const body = JSON.parse(res.payload);
+      expect(body).toHaveProperty('id');
+      expect(body.username).toBe('leadingzero');
+    });
+
     it('POST /auth/register duplicate username → 409', async () => {
       const res = await global.app.inject({
         method: 'POST',
@@ -125,6 +157,18 @@ describe('Auth API (integration)', () => {
         username: 'testuser',
         role: 'user',
       });
+    });
+
+    it('POST /auth/login with numeric PIN → 200', async () => {
+      const res = await global.app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/login',
+        payload: { username: 'testuser', pin: 12345678 }, // number gets converted
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.user.username).toBe('testuser');
+      expect(body).toHaveProperty('token');
     });
 
     it('POST /auth/login with wrong password → 401', async () => {
@@ -201,6 +245,33 @@ describe('Auth API (integration)', () => {
       expect(JSON.parse(res.payload)).toEqual({
         error: 'Invalid username or credentials',
       });
+    });
+
+    it('POST /auth/login with leading zero PIN → 200', async () => {
+      // First register user with leading zero PIN
+      await global.app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/register',
+        payload: {
+          username: 'leadingzerouser',
+          password: 'password123',
+          pin: '00123456',
+        },
+      });
+
+      // Then login with same PIN
+      const res = await global.app.inject({
+        method: 'POST',
+        url: '/api/v1/auth/login',
+        payload: {
+          username: 'leadingzerouser',
+          pin: '00123456',
+        },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.user.username).toBe('leadingzerouser');
+      expect(body).toHaveProperty('token');
     });
   });
 });
