@@ -1,15 +1,13 @@
 # PIN Authentication
 
-This document explains the PIN authentication feature in the DECAF API.
+Pin Authentication is only available when using Mugsy's hardware touchscreen interface.
 
-## Overview
+Users can authenticate using either method per login attempt:
 
-DECAF supports dual authentication methods allowing users to choose their preferred method:
+- **Password**: Secure alphanumeric authentication (recommended for web/admin use)
+- **PIN**: Quick 8-digit numeric authentication (intended for Mugsy hardware)
 
-- **Password Authentication**: Traditional password-based login
-- **PIN Authentication**: 8-digit numeric PIN for quick access
-
-Users can authenticate with either their password OR their PIN on any request.
+**Note**: You cannot provide both password and PIN in the same request - choose one method per authentication attempt.
 
 ## PIN Requirements
 
@@ -108,14 +106,6 @@ Users can authenticate with either their password OR their PIN on any request.
 }
 ```
 
-## Security Features
-
-1. **Flexible authentication**: Users choose their preferred method per session
-2. **Secure hashing**: PINs use bcrypt with same salt rounds as passwords (12)
-3. **Input validation**: Schema-level validation prevents invalid PIN formats
-4. **Generic error messages**: Consistent error messaging to prevent user enumeration
-5. **Mutual exclusion**: Cannot provide both password and PIN simultaneously
-
 ## Database Schema
 
 The `users` table includes a `pin` field:
@@ -186,11 +176,3 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "john", "password": "mySecurePassword123"}'
 ```
-
-## Future Considerations
-
-- **Localhost Detection**: Restrict PIN authentication to localhost connections only
-- **PIN Expiry**: Consider implementing PIN expiration policies
-- **Rate Limiting**: Add additional rate limiting for PIN attempts
-- **PIN Recovery**: Implement PIN reset functionality
-- **Session Tracking**: Track which authentication method was used per session

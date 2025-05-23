@@ -12,7 +12,8 @@ export const loginSchema = {
       pattern: '^[0-9]{8}$',
       minLength: 8,
       maxLength: 8,
-      description: 'Exactly 8 digits for PIN authentication - must be a string',
+      description:
+        'Exactly 8 digits for PIN authentication. Only available when using Mugsy touchscreen.',
     },
   },
   anyOf: [
@@ -34,7 +35,8 @@ export const registerSchema = {
       pattern: '^[0-9]{8}$',
       minLength: 8,
       maxLength: 8,
-      description: 'Exactly 8 digits for PIN authentication - must be a string',
+      description:
+        'Exactly 8 digits for PIN authentication. Only available when using Mugsy touchscreen.',
     },
   },
 };
