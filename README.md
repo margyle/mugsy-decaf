@@ -54,8 +54,6 @@ A Fastify TypeScript backend for Mugsy
 
 The server will be available at http://localhost:3000 with hot reloading enabled.
 
-
-
 ## Project Structure
 
 ```
@@ -181,12 +179,15 @@ Utility functions and helpers:
 
 ## Authentication
 
-DECAF uses JWT for authentication with role-based access control.
+DECAF uses JWT for authentication with role-based access control and supports dual authentication methods:
+
+- **Password Authentication**: Traditional secure login for web interfaces
+- **PIN Authentication**: 8-digit numeric authentication for Mugsy touchscreen
 
 ### Basic Flow
 
-1. Register a user: `POST /api/v1/auth/register`
-2. Login to get a token: `POST /api/v1/auth/login`
+1. Register a user: `POST /api/v1/auth/register` (requires both password and PIN)
+2. Login to get a token: `POST /api/v1/auth/login` (use either password OR PIN)
 3. Include the token in subsequent requests via the `Authorization` header
 
 ### Development vs Production
@@ -199,15 +200,20 @@ For detailed authentication documentation, see [docs/authentication.md](docs/aut
 ### Testing Authentication
 
 ```bash
-# Register a user
+# Register a user (requires both password and PIN)
 curl -X POST http://localhost:3000/api/v1/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "password123"}'
+  -d '{"username": "testuser", "password": "password123", "pin": "12345678"}'
 
-# Login to get a token
+# Login with password
 curl -X POST http://localhost:3000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "testuser", "password": "password123"}'
+
+# Login with PIN (Mugsy touchscreen only)
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "testuser", "pin": "12345678"}'
 
 # Use the token
 curl -X GET http://localhost:3000/api/v1/cats \
@@ -318,18 +324,18 @@ To ensure code quality and a smooth workflow, we enforce these protections in Gi
 
 ### Protected Branches
 
-- `dev` and `main` are both protected.  
+- `dev` and `main` are both protected.
 - Direct pushes are disabled—all changes must go through Pull Requests.
 
 ### Status Checks
 
-- Every PR to `dev` runs the **CI → Lint → Build → Test w/ Coverage** workflow.  
-- Every PR to `main` runs the **Ensure only-dev → Test w/ Coverage** workflow, and also verifies the source branch is `dev`.  
+- Every PR to `dev` runs the **CI → Lint → Build → Test w/ Coverage** workflow.
+- Every PR to `main` runs the **Ensure only-dev → Test w/ Coverage** workflow, and also verifies the source branch is `dev`.
 - Merging is only allowed when these checks pass.
 
 ### Merge Strategy
 
-- Squash merges are enforced for a clean history.  
+- Squash merges are enforced for a clean history.
 - (Optional) **Require branches to be up to date before merging** is enabled so PRs always test against the latest code.
 
 ### Pull Request Reviews

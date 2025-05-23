@@ -10,7 +10,8 @@ const swaggerPlugin: FastifyPluginAsync = async fastify => {
     swagger: {
       info: {
         title: 'Mugsy: DECAF API',
-        description: 'Does Every Coffee Action, Friend - API documentation',
+        description:
+          'Does Every Coffee Action, Friend - API for Mugsy coffee machine control and web interface. Includes PIN authentication for touchscreen use.',
         version: '0.1.0',
       },
       schemes:

@@ -8,12 +8,14 @@ const SALT_ROUNDS = 12; // High work factor for better security
 
 interface LoginRequest {
   username: string;
-  password: string;
+  password?: string;
+  pin?: string;
 }
 
 interface RegisterRequest {
   username: string;
   password: string;
+  pin: string;
 }
 
 /**
@@ -23,6 +25,15 @@ interface RegisterRequest {
  */
 async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, SALT_ROUNDS);
+}
+
+/**
+ * Hash a PIN using bcrypt (same as password for security)
+ * @param pin The plain-text PIN to hash
+ * @returns The hashed PIN
+ */
+async function hashPin(pin: string): Promise<string> {
+  return await bcrypt.hash(pin, SALT_ROUNDS);
 }
 
 /**
@@ -38,12 +49,57 @@ async function verifyPassword(
   return await bcrypt.compare(password, hash);
 }
 
+/**
+ * Verify a PIN against a stored hash
+ * @param pin The plain-text PIN to verify
+ * @param hash The stored PIN hash
+ * @returns True if the PIN matches, false otherwise
+ */
+async function verifyPin(pin: string, hash: string): Promise<boolean> {
+  return await bcrypt.compare(pin, hash);
+}
+
+/**
+ * Validate PIN format (exactly 8 digits)
+ * @param pin The PIN to validate
+ * @returns True if PIN is valid format
+ */
+function isValidPinFormat(pin: string): boolean {
+  return /^[0-9]{8}$/.test(pin);
+}
+
 export async function loginHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Body: LoginRequest }>,
   reply: FastifyReply,
 ) {
-  const { username, password } = request.body;
+  const { username, password, pin } = request.body;
+
+  // Validate that either password or PIN is provided (but not both)
+  if (!password && !pin) {
+    return reply.code(400).send({
+      error: 'Either password or PIN is required',
+    });
+  }
+
+  if (password && pin) {
+    return reply.code(400).send({
+      error: 'Provide either password or PIN, not both',
+    });
+  }
+
+  // Validate PIN type and format if provided
+  if (pin) {
+    // Convert to string to handle both string and number inputs
+    const pinString = String(pin);
+
+    if (!isValidPinFormat(pinString)) {
+      return reply.code(400).send({
+        error: 'Validation Error',
+        message: 'The request data is invalid',
+      });
+    }
+  }
 
   // Find user by username
   const result = await this.db
@@ -53,13 +109,22 @@ export async function loginHandler(
   const user = result[0];
 
   if (!user) {
-    return reply.code(401).send({ error: 'Invalid username or password' });
+    return reply.code(401).send({ error: 'Invalid username or credentials' });
   }
 
-  // Verify password
-  const passwordValid = await verifyPassword(password, user.password);
-  if (!passwordValid) {
-    return reply.code(401).send({ error: 'Invalid username or password' });
+  // Verify credentials based on what was provided
+  let credentialsValid = false;
+
+  if (password) {
+    credentialsValid = await verifyPassword(password, user.password);
+  } else if (pin) {
+    // Convert to string to handle both string and number inputs
+    const pinString = String(pin);
+    credentialsValid = await verifyPin(pinString, user.pin);
+  }
+
+  if (!credentialsValid) {
+    return reply.code(401).send({ error: 'Invalid username or credentials' });
   }
 
   // Generate JWT token
@@ -85,18 +150,32 @@ export async function registerHandler(
   request: FastifyRequest<{ Body: RegisterRequest }>,
   reply: FastifyReply,
 ) {
+  const { username, password, pin } = request.body;
+
+  // Validate PIN type and format
+  // Convert to string to handle both string and number inputs
+  const pinString = String(pin);
+
+  if (!isValidPinFormat(pinString)) {
+    return reply.code(400).send({
+      error: 'Validation Error',
+      message: 'The request data is invalid',
+    });
+  }
+
   // Prevent duplicate username registration
   const existingUser = await this.db
     .select()
     .from(users)
-    .where(eq(users.username, request.body.username));
+    .where(eq(users.username, username));
   if (existingUser[0]) {
     return reply.code(409).send({ error: 'Username already exists' });
   }
 
   try {
-    // Hash password
-    const hashedPassword = await hashPassword(request.body.password);
+    // Hash password and PIN
+    const hashedPassword = await hashPassword(password);
+    const hashedPin = await hashPin(pinString);
 
     // Generate UUID for user
     const userId = uuidv4();
@@ -104,8 +183,9 @@ export async function registerHandler(
     // Insert user to database
     const userData = {
       id: userId,
-      username: request.body.username,
+      username: username,
       password: hashedPassword,
+      pin: hashedPin,
     };
 
     const result = await this.db.insert(users).values(userData).returning();
