@@ -36,7 +36,7 @@ CREATE TABLE `recipes` (
 	`coffee_weight` real NOT NULL,
 	`water_weight` real NOT NULL,
 	`water_temperature` integer NOT NULL,
-	`grind_size` text,
+	`grind_size` integer,
 	`brew_time` integer NOT NULL,
 	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL

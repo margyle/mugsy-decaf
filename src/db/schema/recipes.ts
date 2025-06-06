@@ -16,7 +16,7 @@ export const recipes = sqliteTable('recipes', {
   coffee_weight: real('coffee_weight').notNull(),
   water_weight: real('water_weight').notNull(),
   water_temperature: integer('water_temperature').notNull(),
-  grind_size: text('grind_size'),
+  grind_size: integer('grind_size'),
   brew_time: integer('brew_time').notNull(),
 
   createdAt: text('created_at')
