@@ -15,7 +15,7 @@ interface CreateRecipeBody {
   coffee_weight: number;
   water_weight: number;
   water_temperature: number;
-  grind_size?: string;
+  grind_size?: number;
   brew_time: number;
 }
 
@@ -25,7 +25,7 @@ interface UpdateRecipeBody {
   coffee_weight?: number;
   water_weight?: number;
   water_temperature?: number;
-  grind_size?: string;
+  grind_size?: number;
   brew_time?: number;
 }
 
