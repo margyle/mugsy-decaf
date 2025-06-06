@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "5cf41821-37af-4b39-a7b6-01168426eafe",
+  "id": "2ebecdf2-c207-42d5-8e55-84fee5aa7460",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "cats": {
@@ -246,7 +246,7 @@
         },
         "grind_size": {
           "name": "grind_size",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
