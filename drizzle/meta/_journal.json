@@ -8,6 +8,13 @@
       "when": 1748034179882,
       "tag": "0000_low_blizzard",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1749247792805,
+      "tag": "0001_rich_vanisher",
+      "breakpoints": true
     }
   ]
 }
