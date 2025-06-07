@@ -15,6 +15,7 @@ import {
   getRecipeStepParamsSchema,
   createRecipeStepBodySchema,
   updateRecipeStepBodySchema,
+  getRecipeByUserIdParamsSchema,
 } from './schema';
 
 type FastifyInstanceWithAuth = FastifyInstance & {
@@ -60,6 +61,21 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
       },
     },
     handler: handlers.getRecipeByIdHandler,
+  });
+
+  // Get recipes by user ID
+  fastify.route({
+    method: 'GET',
+    url: '/user/:id',
+    schema: {
+      params: getRecipeByUserIdParamsSchema,
+      response: {
+        200: { $ref: 'recipesArrayResponse#' },
+        404: { $ref: 'recipeErrorResponse#' },
+      },
+    },
+    preHandler: [server.authenticate],
+    handler: handlers.getRecipeByUserIdHandler,
   });
 
   // Create recipe

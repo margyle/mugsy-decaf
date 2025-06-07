@@ -137,6 +137,14 @@ export const getRecipeParamsSchema = {
   },
 };
 
+export const getRecipeByUserIdParamsSchema = {
+  type: 'object',
+  required: ['id'],
+  properties: {
+    id: { type: 'string' },
+  },
+};
+
 export const createRecipeBodySchema = {
   type: 'object',
   required: [
