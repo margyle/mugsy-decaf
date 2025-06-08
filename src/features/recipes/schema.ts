@@ -71,6 +71,17 @@ export const recipeResponseSchema = {
     water_temperature: { type: 'integer' },
     grind_size: { type: 'string' },
     brew_time: { type: 'integer' },
+    tags: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          name: { type: 'string' },
+          slug: { type: 'string' },
+        },
+      },
+    },
   },
 };
 
@@ -136,7 +147,6 @@ export const getRecipeParamsSchema = {
     id: { type: 'string' },
   },
 };
-
 export const getRecipeByUserIdParamsSchema = {
   type: 'object',
   required: ['id'],

@@ -1,8 +1,40 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { recipes, recipe_steps } from '../../db/schema/recipes';
-import { eq, sql } from 'drizzle-orm';
+import { tags, recipe_tags } from '../../db/schema/tags';
+import { eq, sql, inArray } from 'drizzle-orm';
 import { NotFoundError } from '../../utils/errors';
 import { v4 as uuidv4 } from 'uuid';
+
+// Type definitions for the relational queries
+interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface RecipeTag {
+  recipe_id: string;
+  tag_id: string;
+  createdAt: string;
+  tag: Tag;
+}
+
+interface RecipeWithTags {
+  id: string;
+  created_by: string | null;
+  name: string;
+  description: string | null;
+  coffee_weight: number;
+  water_weight: number;
+  water_temperature: number;
+  grind_size: number | null;
+  brew_time: number;
+  createdAt: string;
+  updatedAt: string;
+  recipe_tags: RecipeTag[];
+}
 
 // Recipe Request Interfaces
 interface RecipeParams {
@@ -54,8 +86,16 @@ export async function getAllRecipesHandler(
   this: FastifyInstance,
   request: FastifyRequest,
   reply: FastifyReply,
-): Promise<FastifyReply> {
-  const allRecipes = await this.db.select().from(recipes);
+) {
+  const allRecipes = (await this.db.query.recipes.findMany({
+    with: {
+      recipe_tags: {
+        with: {
+          tag: true,
+        },
+      },
+    },
+  })) as RecipeWithTags[];
 
   // Format response to match schema
   const formattedRecipes = allRecipes.map(recipe => ({
@@ -68,6 +108,11 @@ export async function getAllRecipesHandler(
     water_temperature: recipe.water_temperature,
     grind_size: recipe.grind_size,
     brew_time: recipe.brew_time,
+    tags: recipe.recipe_tags.map(recipeTag => ({
+      id: recipeTag.tag.id,
+      name: recipeTag.tag.name,
+      slug: recipeTag.tag.slug,
+    })),
   }));
 
   return reply.code(200).send(formattedRecipes);
@@ -77,17 +122,23 @@ export async function getRecipeByIdHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { id } = request.params;
 
-  // Get recipe
-  const result = await this.db.select().from(recipes).where(eq(recipes.id, id));
+  const recipe = (await this.db.query.recipes.findFirst({
+    where: eq(recipes.id, id),
+    with: {
+      recipe_tags: {
+        with: {
+          tag: true,
+        },
+      },
+    },
+  })) as RecipeWithTags | undefined;
 
-  if (!result[0]) {
+  if (!recipe) {
     throw NotFoundError(`Recipe with ID ${id} not found`);
   }
-
-  const recipe = result[0];
 
   return reply.code(200).send({
     id: recipe.id,
@@ -99,23 +150,34 @@ export async function getRecipeByIdHandler(
     water_temperature: recipe.water_temperature,
     grind_size: recipe.grind_size,
     brew_time: recipe.brew_time,
+    tags: recipe.recipe_tags.map(recipeTag => ({
+      id: recipeTag.tag.id,
+      name: recipeTag.tag.name,
+      slug: recipeTag.tag.slug,
+    })),
   });
 }
 
-export async function getRecipeByUserIdHandler(
+export async function getRecipesByUserIdHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { id } = request.params;
 
-  const result = await this.db
-    .select()
-    .from(recipes)
-    .where(eq(recipes.created_by, id));
+  const result = (await this.db.query.recipes.findMany({
+    where: eq(recipes.created_by, id),
+    with: {
+      recipe_tags: {
+        with: {
+          tag: true,
+        },
+      },
+    },
+  })) as RecipeWithTags[];
 
-  if (!result[0]) {
-    throw NotFoundError(`Recipe with ID ${id} not found`);
+  if (!result.length) {
+    throw NotFoundError(`No recipes found for user with ID ${id}`);
   }
 
   const formattedRecipes = result.map(recipe => ({
@@ -128,6 +190,11 @@ export async function getRecipeByUserIdHandler(
     water_temperature: recipe.water_temperature,
     grind_size: recipe.grind_size,
     brew_time: recipe.brew_time,
+    tags: recipe.recipe_tags.map(recipeTag => ({
+      id: recipeTag.tag.id,
+      name: recipeTag.tag.name,
+      slug: recipeTag.tag.slug,
+    })),
   }));
 
   return reply.code(200).send(formattedRecipes);
@@ -137,7 +204,7 @@ export async function createRecipeHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Body: CreateRecipeBody }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const userId = request.user?.id || null;
   const recipeId = uuidv4();
   const recipeData = {
@@ -167,7 +234,7 @@ export async function updateRecipeHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams; Body: UpdateRecipeBody }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { id } = request.params;
   const userId = request.user?.id || null;
 
@@ -219,7 +286,7 @@ export async function deleteRecipeHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { id } = request.params;
   const userId = request.user?.id || null;
 
@@ -254,7 +321,7 @@ export async function getRecipeStepsHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeParams }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { id } = request.params;
 
   // Check if recipe exists
@@ -291,7 +358,7 @@ export async function getRecipeStepByIdHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeStepParams }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { id } = request.params;
 
   // Get step
@@ -320,7 +387,7 @@ export async function createRecipeStepHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Body: CreateRecipeStepBody }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { recipe_id } = request.body;
   const userId = request.user?.id || null;
 
@@ -374,7 +441,7 @@ export async function updateRecipeStepHandler(
     Body: UpdateRecipeStepBody;
   }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { id } = request.params;
   const userId = request.user?.id || null;
 
@@ -434,7 +501,7 @@ export async function deleteRecipeStepHandler(
   this: FastifyInstance,
   request: FastifyRequest<{ Params: RecipeStepParams }>,
   reply: FastifyReply,
-): Promise<FastifyReply> {
+) {
   const { id } = request.params;
   const userId = request.user?.id || null;
 

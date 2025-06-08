@@ -1,22 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import * as handlers from './handlers';
-import {
-  recipeSchema,
-  recipeStepSchema,
-  recipeResponseSchema,
-  recipeWithStepsResponseSchema,
-  recipeStepResponseSchema,
-  recipesArrayResponseSchema,
-  recipeStepsArrayResponseSchema,
-  errorResponseSchema,
-  getRecipeParamsSchema,
-  createRecipeBodySchema,
-  updateRecipeBodySchema,
-  getRecipeStepParamsSchema,
-  createRecipeStepBodySchema,
-  updateRecipeStepBodySchema,
-  getRecipeByUserIdParamsSchema,
-} from './schema';
+import * as schema from './schema';
 
 type FastifyInstanceWithAuth = FastifyInstance & {
   authenticate: any;
@@ -28,14 +12,14 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
   const server = fastify as FastifyInstanceWithAuth;
 
   // Register all schemas
-  fastify.addSchema(recipeSchema);
-  fastify.addSchema(recipeStepSchema);
-  fastify.addSchema(recipeResponseSchema);
-  fastify.addSchema(recipeWithStepsResponseSchema);
-  fastify.addSchema(recipeStepResponseSchema);
-  fastify.addSchema(recipesArrayResponseSchema);
-  fastify.addSchema(recipeStepsArrayResponseSchema);
-  fastify.addSchema(errorResponseSchema);
+  fastify.addSchema(schema.recipeSchema);
+  fastify.addSchema(schema.recipeStepSchema);
+  fastify.addSchema(schema.recipeResponseSchema);
+  fastify.addSchema(schema.recipeWithStepsResponseSchema);
+  fastify.addSchema(schema.recipeStepResponseSchema);
+  fastify.addSchema(schema.recipesArrayResponseSchema);
+  fastify.addSchema(schema.recipeStepsArrayResponseSchema);
+  fastify.addSchema(schema.errorResponseSchema);
 
   // Get all recipes
   fastify.route({
@@ -54,7 +38,7 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'GET',
     url: '/:id',
     schema: {
-      params: getRecipeParamsSchema,
+      params: schema.getRecipeParamsSchema,
       response: {
         200: { $ref: 'recipeWithStepsResponse#' },
         404: { $ref: 'recipeErrorResponse#' },
@@ -68,14 +52,14 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'GET',
     url: '/user/:id',
     schema: {
-      params: getRecipeByUserIdParamsSchema,
+      params: schema.getRecipeByUserIdParamsSchema,
       response: {
         200: { $ref: 'recipesArrayResponse#' },
         404: { $ref: 'recipeErrorResponse#' },
       },
     },
     preHandler: [server.authenticate],
-    handler: handlers.getRecipeByUserIdHandler,
+    handler: handlers.getRecipesByUserIdHandler,
   });
 
   // Create recipe
@@ -83,7 +67,7 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'POST',
     url: '/',
     schema: {
-      body: createRecipeBodySchema,
+      body: schema.createRecipeBodySchema,
       response: {
         201: { $ref: 'recipeResponse#' },
         400: { $ref: 'recipeErrorResponse#' },
@@ -98,8 +82,8 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'PUT',
     url: '/:id',
     schema: {
-      params: getRecipeParamsSchema,
-      body: updateRecipeBodySchema,
+      params: schema.getRecipeParamsSchema,
+      body: schema.updateRecipeBodySchema,
       response: {
         200: { $ref: 'recipeResponse#' },
         400: { $ref: 'recipeErrorResponse#' },
@@ -116,7 +100,7 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'DELETE',
     url: '/:id',
     schema: {
-      params: getRecipeParamsSchema,
+      params: schema.getRecipeParamsSchema,
       response: {
         204: {
           type: 'null',
@@ -137,7 +121,7 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'GET',
     url: '/:id/steps',
     schema: {
-      params: getRecipeParamsSchema,
+      params: schema.getRecipeParamsSchema,
       response: {
         200: { $ref: 'recipeStepsArrayResponse#' },
         404: { $ref: 'recipeErrorResponse#' },
@@ -151,7 +135,7 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'GET',
     url: '/steps/:id',
     schema: {
-      params: getRecipeStepParamsSchema,
+      params: schema.getRecipeStepParamsSchema,
       response: {
         200: { $ref: 'recipeStepResponse#' },
         404: { $ref: 'recipeErrorResponse#' },
@@ -165,7 +149,7 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'POST',
     url: '/steps',
     schema: {
-      body: createRecipeStepBodySchema,
+      body: schema.createRecipeStepBodySchema,
       response: {
         201: { $ref: 'recipeStepResponse#' },
         400: { $ref: 'recipeErrorResponse#' },
@@ -182,8 +166,8 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'PUT',
     url: '/steps/:id',
     schema: {
-      params: getRecipeStepParamsSchema,
-      body: updateRecipeStepBodySchema,
+      params: schema.getRecipeStepParamsSchema,
+      body: schema.updateRecipeStepBodySchema,
       response: {
         200: { $ref: 'recipeStepResponse#' },
         400: { $ref: 'recipeErrorResponse#' },
@@ -200,7 +184,7 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
     method: 'DELETE',
     url: '/steps/:id',
     schema: {
-      params: getRecipeStepParamsSchema,
+      params: schema.getRecipeStepParamsSchema,
       response: {
         204: {
           type: 'null',

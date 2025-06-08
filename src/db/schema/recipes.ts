@@ -6,7 +6,7 @@ import {
   real,
   index,
 } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import { sql, relations } from 'drizzle-orm';
 
 export const recipes = sqliteTable('recipes', {
   id: text('id').primaryKey(), // UUID stored as TEXT
@@ -48,3 +48,19 @@ export const recipe_steps = sqliteTable('recipe_steps', {
 export const recipeStepIndex = index('idx_recipe_steps_recipe_id').on(
   recipe_steps.recipe_id,
 );
+
+// Import recipe_tags from tags schema for the relation
+import { recipe_tags } from './tags';
+
+// Relations
+export const recipesRelations = relations(recipes, ({ many }) => ({
+  steps: many(recipe_steps),
+  recipe_tags: many(recipe_tags),
+}));
+
+export const recipeStepsRelations = relations(recipe_steps, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipe_steps.recipe_id],
+    references: [recipes.id],
+  }),
+}));
