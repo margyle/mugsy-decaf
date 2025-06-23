@@ -17,6 +17,7 @@ export interface EnvConfig {
   JWT_SECRET: string;
   JWT_EXPIRES_IN: string;
   DATABASE_URL: string;
+  BETTER_AUTH_SECRET: string;
 }
 
 const envConfig: EnvConfig = {
@@ -28,9 +29,16 @@ const envConfig: EnvConfig = {
     process.env.JWT_SECRET || 'super-secret-key-change-me-in-production',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1d',
   DATABASE_URL: process.env.DATABASE_URL || './data/decaf.db',
+  BETTER_AUTH_SECRET:
+    process.env.BETTER_AUTH_SECRET ||
+    'super-secret-key-change-me-in-production',
 };
 
-const requiredEnvVars: Array<keyof EnvConfig> = ['JWT_SECRET', 'DATABASE_URL'];
+const requiredEnvVars: Array<keyof EnvConfig> = [
+  'JWT_SECRET',
+  'DATABASE_URL',
+  'BETTER_AUTH_SECRET',
+];
 
 for (const envVar of requiredEnvVars) {
   if (!envConfig[envVar]) {
