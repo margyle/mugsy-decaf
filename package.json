@@ -30,6 +30,7 @@
     "@scalar/fastify-api-reference": "^1.28.26",
     "@types/uuid": "^10.0.0",
     "bcrypt": "^5.1.1",
+    "better-auth": "^1.2.10",
     "better-sqlite3": "^9.4.1",
     "dotenv": "^16.4.2",
     "drizzle-orm": "^0.29.3",
