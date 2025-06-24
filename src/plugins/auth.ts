@@ -1,16 +1,10 @@
 // plugins/auth.ts
 import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
-import { auth } from '../auth'; // Your Better Auth instance
-import { appConfig } from '../config'; // Import your config
-
-// Create the full auth prefix
-const AUTH_PREFIX = `${appConfig.apiPrefix}/${appConfig.apiVersion}/auth`;
-
-// Extend Fastify's request interface to include user session
+import { auth } from '../auth';
 declare module 'fastify' {
   interface FastifyRequest {
-    user?: {
+    user: {
       id: string;
       email: string;
       name?: string;
@@ -34,15 +28,15 @@ declare module 'fastify' {
 
 const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
   console.log('🚀 Auth plugin is loading...');
-  console.log('🔧 Plugin options:', opts); // This should show the prefix
-  console.log('🌐 Fastify prefix:', fastify.prefix); // This should show the current prefix
-
+  console.log('🔧 Plugin options:', opts);
+  console.log('🌐 Fastify prefix:', fastify.prefix);
   // Auth handler function
   async function authHandler(request: FastifyRequest, reply: FastifyReply) {
     console.log('🔥 Auth handler called for:', request.method, request.url);
     try {
       // Construct request URL
       const url = new URL(request.url, `http://${request.headers.host}`);
+      console.log('📍 Constructed URL:', url.toString());
 
       // Convert Fastify headers to standard Headers object
       const headers = new Headers();
@@ -57,14 +51,17 @@ const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
         body: request.body ? JSON.stringify(request.body) : undefined,
       });
 
+      console.log('🚀 Calling Better Auth handler...');
       // Process authentication request
       const response = await auth.handler(req);
+      console.log('✅ Better Auth response status:', response.status);
 
       // Forward response to client
       reply.status(response.status);
       response.headers.forEach((value, key) => reply.header(key, value));
       reply.send(response.body ? await response.text() : null);
     } catch (error) {
+      console.error('💥 Auth handler error:', error);
       fastify.log.error('Authentication Error:', error);
       reply.status(500).send({
         error: 'Internal authentication error',
@@ -83,11 +80,10 @@ const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
   // Middleware to check authentication (throws if not authenticated)
   const authenticate = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      // Get session from authorization header only (no cookies for now)
-      const sessionToken = request.headers.authorization?.replace(
-        'Bearer ',
-        '',
-      );
+      // Get session from cookies OR authorization header (both supported)
+      const sessionToken =
+        request.cookies?.['better-auth.session_token'] ||
+        request.headers.authorization?.replace('Bearer ', '');
 
       if (!sessionToken) {
         reply.status(401).send({ error: 'No session token' });
@@ -158,8 +154,6 @@ const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
   });
 };
 
-// Use fastify-plugin to ensure the decorators are available in parent scope
 export default fp(authPlugin, {
   name: 'auth',
-  // Remove dependencies - just ensure you register cookie plugin before this one
 });
