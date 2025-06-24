@@ -22,6 +22,11 @@ export function buildApp(options?: { dbClient?: DbPluginOptions['client'] }) {
     prefix: `${appConfig.apiPrefix}/${appConfig.apiVersion}`,
   });
 
+  fastify.ready(() => {
+    console.log('📋 Registered routes:');
+    console.log(fastify.printRoutes());
+  });
+
   // Define root route
   fastify.get('/', async () => {
     return {
