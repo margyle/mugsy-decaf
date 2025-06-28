@@ -8,8 +8,8 @@ const helmetPlugin: FastifyPluginAsync = async fastify => {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
         imgSrc: ["'self'", 'data:'],
       },
     },

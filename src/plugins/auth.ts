@@ -25,16 +25,20 @@ declare module 'fastify' {
 }
 
 const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
-  console.log('🚀 Auth plugin is loading...');
-  console.log('🔧 Plugin options:', opts);
-  console.log('🌐 Fastify prefix:', fastify.prefix);
+  fastify.log.info('🚀 Auth plugin is loading...');
+  fastify.log.info('🔧 Plugin options:', opts);
+  fastify.log.info('🌐 Fastify prefix:', fastify.prefix);
   // Auth handler function
   async function authHandler(request: FastifyRequest, reply: FastifyReply) {
-    console.log('🔥 Auth handler called for:', request.method, request.url);
+    fastify.log.info(
+      '🔥 Auth handler called for:',
+      request.method,
+      request.url,
+    );
     try {
       // Construct request URL
       const url = new URL(request.url, `http://${request.headers.host}`);
-      console.log('📍 Constructed URL:', url.toString());
+      fastify.log.info('📍 Constructed URL:', url.toString());
 
       // Convert Fastify headers to standard Headers object
       const headers = new Headers();
@@ -49,17 +53,22 @@ const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
         body: request.body ? JSON.stringify(request.body) : undefined,
       });
 
-      console.log('🚀 Calling Better Auth handler...');
+      fastify.log.info('🚀 Calling Better Auth handler...');
       // Process authentication request
       const response = await auth.handler(req);
-      console.log('✅ Better Auth response status:', response.status);
+      fastify.log.info('✅ Better Auth response status:', response.status);
 
       // Forward response to client
       reply.status(response.status);
       response.headers.forEach((value, key) => reply.header(key, value));
-      reply.send(response.body ? await response.text() : null);
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        reply.send(response.body ? await response.json() : null);
+      } else {
+        reply.send(response.body ? await response.text() : null);
+      }
     } catch (error) {
-      console.error('💥 Auth handler error:', error);
+      fastify.log.error('💥 Auth handler error:', error);
       fastify.log.error('Authentication Error:', error);
       reply.status(500).send({
         error: 'Internal authentication error',
@@ -71,7 +80,7 @@ const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
   // Register the catch-all with specific methods (no OPTIONS to avoid CORS conflict)
   fastify.route({
     method: ['GET', 'POST'],
-    url: '/*',
+    url: '/api/v1/auth/*',
     handler: authHandler,
   });
 
