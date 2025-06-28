@@ -8,13 +8,11 @@ declare module 'fastify' {
       id: string;
       email: string;
       name?: string;
-      // Add other user properties as needed
     };
     session?: {
       id: string;
       userId: string;
       expiresAt: Date;
-      // Add other session properties as needed
     };
   }
   interface FastifyInstance {

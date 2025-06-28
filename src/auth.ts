@@ -8,6 +8,7 @@ export const auth = betterAuth({
     provider: 'sqlite',
     schema,
   }),
+  secret: process.env.BETTER_AUTH_SECRET,
   basePath: '/api/v1/auth',
   emailAndPassword: {
     enabled: true,
