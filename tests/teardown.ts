@@ -1,6 +1,6 @@
 import { unlinkSync, existsSync } from 'fs';
 
-export default function teardown() {
+export async function teardown() {
   console.log('🧹 Global teardown - deleting test database...');
 
   const dbPath = process.env.DATABASE_URL || 'testdb';
