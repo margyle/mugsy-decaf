@@ -24,6 +24,7 @@ data/
 *.sqlite
 *.sqlite-journal
 :memory:
+testdb
 
 # IDE
 .idea/

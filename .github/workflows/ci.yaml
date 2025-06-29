@@ -32,9 +32,15 @@ jobs:
 
       - name: Build
         run: npm run build
-
       - name: Run tests & collect coverage
         run: npm run test:coverage
+        env:
+          NODE_ENV: test
+          DATABASE_URL: testdb-ci
+          JWT_SECRET: test_jwt_secret_for_ci
+          JWT_EXPIRES_IN: 1d
+          BETTER_AUTH_SECRET: test_auth_secret_for_ci_8CgcbN3ovBTozm7wJ6Gimmmq0vSanm8t
+          LOG_LEVEL: error
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -68,9 +74,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
       - name: Run tests & collect coverage
         run: npm run test:coverage
+        env:
+          NODE_ENV: test
+          DATABASE_URL: testdb-ci
+          JWT_SECRET: test_jwt_secret_for_ci
+          JWT_EXPIRES_IN: 1d
+          BETTER_AUTH_SECRET: test_auth_secret_for_ci_8CgcbN3ovBTozm7wJ6Gimmmq0vSanm8t
+          LOG_LEVEL: error
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
