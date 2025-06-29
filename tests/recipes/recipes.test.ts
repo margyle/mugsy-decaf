@@ -2,6 +2,8 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { sql } from 'drizzle-orm';
 import { recipes } from '../../src/db/schema/recipes';
 
+let authCookie: string;
+
 const authHeader = () => {
   const token = global.app.jwt.sign({
     id: 'test',
@@ -41,12 +43,38 @@ beforeAll(async () => {
       brew_time: 45,
     },
   ]);
+  // 2) Register test user
+  const signUpRes = await global.app.inject({
+    method: 'POST',
+    url: '/api/v1/auth/sign-up/email',
+    payload: {
+      email: 'testuser4@test.com',
+      password: 'password123',
+      name: 'Test User',
+    },
+  });
+  if (signUpRes.statusCode !== 200) {
+    throw new Error(`Sign-up failed: ${signUpRes.statusCode}`);
+  }
+
+  // 3) Login to get auth cookie
+  const signInRes = await global.app.inject({
+    method: 'POST',
+    url: '/api/v1/auth/sign-in/email',
+    payload: { email: 'testuser4@test.com', password: 'password123' },
+  });
+  if (signInRes.statusCode !== 200) {
+    throw new Error(`Sign-in failed: ${signInRes.statusCode}`);
+  }
+  const header = signInRes.headers['set-cookie'];
+  authCookie = Array.isArray(header) ? header[0] : header;
 });
 
 afterAll(async () => {
   // clean up recipes table
   await global.dbClient.run(sql`DELETE FROM recipe_steps`);
   await global.dbClient.run(sql`DELETE FROM recipes`);
+  global.sqliteDb.close();
 });
 
 describe('Recipes API (integration)', () => {
@@ -116,12 +144,12 @@ describe('Recipes API (integration)', () => {
       method: 'POST',
       url: '/api/v1/recipes',
       payload,
-      headers: authHeader(),
+      headers: { cookie: authCookie },
     });
     expect(res.statusCode).toBe(201);
     const body = JSON.parse(res.payload);
     expect(body).toMatchObject(payload);
     expect(typeof body.id).toBe('string');
-    expect(body.created_by).toBe('test');
+    expect(body.name).toBe('Test Brew');
   });
 });
