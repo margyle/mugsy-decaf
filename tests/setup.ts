@@ -1,13 +1,17 @@
 import { beforeAll, afterAll } from 'vitest';
-import betterSqlite3 from 'better-sqlite3';
+import betterSqlite3, { Database } from 'better-sqlite3';
 import { join } from 'path';
 import dotenv from 'dotenv';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+
+// Import buildApp to get its return type
+import type { buildApp } from '../src/app';
 
 // Globals for tests
 declare global {
-  var app: any;
-  var dbClient: any;
-  var sqliteDb: any;
+  var app: ReturnType<typeof buildApp>;
+  var dbClient: ReturnType<typeof drizzle>;
+  var sqliteDb: Database;
 }
 
 // Load test environment variables
