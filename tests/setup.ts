@@ -1,9 +1,7 @@
-process.env.NODE_ENV = 'test';
-process.env.DATABASE_URL = 'testdb';
-
 import { beforeAll, afterAll } from 'vitest';
 import betterSqlite3 from 'better-sqlite3';
 import { join } from 'path';
+import dotenv from 'dotenv';
 
 // Globals for tests
 declare global {
@@ -11,6 +9,9 @@ declare global {
   var dbClient: any;
   var sqliteDb: any;
 }
+
+// Load test environment variables
+dotenv.config({ path: '.env.test' });
 
 beforeAll(async () => {
   console.log('🔧 Setting up SQLite DB and Fastify app...');
