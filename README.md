@@ -179,46 +179,47 @@ Utility functions and helpers:
 
 ## Authentication
 
-DECAF uses JWT for authentication with role-based access control and supports dual authentication methods:
+DECAF uses [Better Auth](https://better-auth.com) for authentication - a modern, secure auth library that handles sessions via cookies automatically.
 
-- **Password Authentication**: Traditional secure login for web interfaces
-- **PIN Authentication**: 8-digit numeric authentication for Mugsy touchscreen
+### The Basics
 
-### Basic Flow
+1. **Sign up**: `POST /api/v1/auth/sign-up/email`
+2. **Sign in**: `POST /api/v1/auth/sign-in/email`
+3. **Sign out**: `POST /api/v1/auth/sign-out`
+4. **Check status**: Use the auth session cookie (set automatically)
 
-1. Register a user: `POST /api/v1/auth/register` (requires both password and PIN)
-2. Login to get a token: `POST /api/v1/auth/login` (use either password OR PIN)
-3. Include the token in subsequent requests via the `Authorization` header
+Better Auth handles all the security stuff (sessions, CSRF protection, secure cookies) so you don't have to worry about tokens or headers.
 
-### Development vs Production
-
-- **Development**: Authentication is fully enabled but relaxed (long-lived tokens)
-- **Production**: Tightened security (strong secrets, shorter token lifetimes)
-
-For detailed authentication documentation, see [docs/authentication.md](docs/authentication.md).
-
-### Testing Authentication
+### Quick Test Drive
 
 ```bash
-# Register a user (requires both password and PIN)
-curl -X POST http://localhost:3000/api/v1/auth/register \
+# Sign up a new user
+curl -X POST http://localhost:3000/api/v1/auth/sign-up/email \
   -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "password123", "pin": "12345678"}'
+  -d '{"email": "test@example.com", "password": "password123", "name": "Test User"}'
 
-# Login with password
-curl -X POST http://localhost:3000/api/v1/auth/login \
+# Sign in (cookies are handled automatically)
+curl -X POST http://localhost:3000/api/v1/auth/sign-in/email \
   -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "password": "password123"}'
+  -c cookies.txt \
+  -d '{"email": "test@example.com", "password": "password123"}'
 
-# Login with PIN (Mugsy touchscreen only)
-curl -X POST http://localhost:3000/api/v1/auth/login \
+# Use protected endpoints (cookies sent automatically)
+curl -X POST http://localhost:3000/api/v1/cats \
   -H "Content-Type: application/json" \
-  -d '{"username": "testuser", "pin": "12345678"}'
+  -b cookies.txt \
+  -d '{"name": "Fluffy", "type": "persian"}'
 
-# Use the token
-curl -X GET http://localhost:3000/api/v1/cats \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+# Sign out when done
+curl -X POST http://localhost:3000/api/v1/auth/sign-out \
+  -b cookies.txt
 ```
+
+### Explore the API
+
+Check out all available auth endpoints and try them interactively:
+
+- **API Reference**: http://localhost:3000/api/v1/auth/reference (when dev server is running)
 
 ## API Documentation
 
