@@ -188,7 +188,7 @@ DECAF uses [Better Auth](https://better-auth.com) for authentication - a modern,
 3. **Sign out**: `POST /api/v1/auth/sign-out`
 4. **Check status**: Use the auth session cookie (set automatically)
 
-Better Auth handles all the security stuff (sessions, CSRF protection, secure cookies) so you don't have to worry about tokens or headers.
+Better Auth handles all the security (sessions, CSRF protection, secure cookies) so you don't have to worry about tokens or headers.
 
 ### Quick Test Drive
 
