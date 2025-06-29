@@ -92,6 +92,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await global.dbClient.run(sql`DELETE FROM recipe_steps`);
   await global.dbClient.run(sql`DELETE FROM recipes`);
+  await global.dbClient.run(sql`DELETE FROM "user"`);
 });
 
 describe('Recipes API (integration)', () => {

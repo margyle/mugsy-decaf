@@ -41,8 +41,6 @@ describe('Cats API (integration)', () => {
   });
 
   afterAll(async () => {
-    // clean up both tables
-    // await global.sqliteDb.prepare('DELETE FROM "user"').run();
     await global.dbClient.run(sql`DELETE FROM cats;`);
     // global.sqliteDb.close();
   });
