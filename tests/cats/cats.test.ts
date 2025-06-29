@@ -5,36 +5,39 @@ import { cats } from '../../src/db/schema/cats';
 
 let authCookie: string;
 
+const testEmail = `testuser${Date.now()}@test.com`;
+
 describe('Cats API (integration)', () => {
+  console.log(`testEmail 1 🔥🔥🔥🔥🔥`, testEmail);
   beforeAll(async () => {
+    await global.dbClient.run(sql`DELETE FROM cats`);
+    await global.dbClient.run(sql`DELETE FROM "user"`);
     // seed cats table
-    await global.dbClient.run(sql`DELETE FROM cats;`);
     await global.dbClient.insert(cats).values([
       { id: '1', name: 'Franky', type: 'golden nugget' },
       { id: '2', name: 'Boofus', type: 'anxiety void boy' },
     ]);
 
-    // 1) SIGN UP – await it!
     const signUpRes = await global.app.inject({
       method: 'POST',
       url: '/api/v1/auth/sign-up/email',
       payload: {
-        email: 'test@test.com',
+        email: testEmail,
         password: 'password123',
         name: 'Tester',
       },
     });
+    console.log(`testEmail 2 🔥🔥🔥🔥🔥`, testEmail);
     expect(signUpRes.statusCode).toBe(200);
 
-    // 2) SIGN IN – await *that* too!
     const signInRes = await global.app.inject({
       method: 'POST',
       url: '/api/v1/auth/sign-in/email',
-      payload: { email: 'test@test.com', password: 'password123' },
+      payload: { email: testEmail, password: 'password123' },
     });
+    console.log(`testEmail 3 🔥🔥🔥🔥🔥`, testEmail);
     expect(signInRes.statusCode).toBe(200);
 
-    // 3) GRAB COOKIE for future calls
     const header = signInRes.headers['set-cookie'];
     authCookie = Array.isArray(header) ? header[0] : header;
     expect(authCookie).toBeDefined();
@@ -42,9 +45,9 @@ describe('Cats API (integration)', () => {
 
   afterAll(async () => {
     // clean up both tables
-    await global.sqliteDb.prepare('DELETE FROM "user"').run();
+    // await global.sqliteDb.prepare('DELETE FROM "user"').run();
     await global.dbClient.run(sql`DELETE FROM cats;`);
-    global.sqliteDb.close();
+    // global.sqliteDb.close();
   });
 
   it('GET /cats → array of cats', async () => {
@@ -70,7 +73,6 @@ describe('Cats API (integration)', () => {
   });
 
   it('POST /cats creates a cat', async () => {
-    // now with a fully awaited authCookie in hand
     const res = await global.app.inject({
       method: 'POST',
       url: '/api/v1/cats',

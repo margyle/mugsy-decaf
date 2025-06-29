@@ -5,6 +5,7 @@ module.exports = defineConfig({
     globals: true,
     environment: 'node',
     setupFiles: './tests/setup.ts',
+    teardown: './tests/teardown.ts',
     include: ['./tests/**/*.test.ts'],
     coverage: {
       provider: 'v8',

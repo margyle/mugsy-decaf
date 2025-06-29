@@ -4,6 +4,8 @@ import { recipes } from '../../src/db/schema/recipes';
 
 let authCookie: string;
 
+const testEmail = `recipesUser${Date.now()}@test.com`;
+
 const authHeader = () => {
   const token = global.app.jwt.sign({
     id: 'test',
@@ -17,6 +19,7 @@ beforeAll(async () => {
   // reset recipes table
   await global.dbClient.run(sql`DELETE FROM recipe_steps`);
   await global.dbClient.run(sql`DELETE FROM recipes`);
+  await global.dbClient.run(sql`DELETE FROM "user"`);
 
   // seed two recipes
   await global.dbClient.insert(recipes).values([
@@ -43,12 +46,12 @@ beforeAll(async () => {
       brew_time: 45,
     },
   ]);
-  // 2) Register test user
+
   const signUpRes = await global.app.inject({
     method: 'POST',
     url: '/api/v1/auth/sign-up/email',
     payload: {
-      email: 'testuser4@test.com',
+      email: testEmail,
       password: 'password123',
       name: 'Test User',
     },
@@ -57,11 +60,10 @@ beforeAll(async () => {
     throw new Error(`Sign-up failed: ${signUpRes.statusCode}`);
   }
 
-  // 3) Login to get auth cookie
   const signInRes = await global.app.inject({
     method: 'POST',
     url: '/api/v1/auth/sign-in/email',
-    payload: { email: 'testuser4@test.com', password: 'password123' },
+    payload: { email: testEmail, password: 'password123' },
   });
   if (signInRes.statusCode !== 200) {
     throw new Error(`Sign-in failed: ${signInRes.statusCode}`);
@@ -71,10 +73,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  // clean up recipes table
-  await global.dbClient.run(sql`DELETE FROM recipe_steps`);
-  await global.dbClient.run(sql`DELETE FROM recipes`);
-  global.sqliteDb.close();
+  await global.sqliteDb.prepare('DELETE FROM "recipes"').run();
 });
 
 describe('Recipes API (integration)', () => {
