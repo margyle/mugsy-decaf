@@ -42,15 +42,11 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  console.log('🧹 Closing connections...');
-
   if (global.app) {
     await global.app.close();
-    console.log('✔️ Closed Fastify app');
   }
 
   if (global.sqliteDb) {
     global.sqliteDb.close();
-    console.log('✔️ Closed SQLite connection');
   }
 });

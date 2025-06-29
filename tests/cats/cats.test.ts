@@ -8,7 +8,6 @@ let authCookie: string;
 const testEmail = `testuser${Date.now()}@test.com`;
 
 describe('Cats API (integration)', () => {
-  console.log(`testEmail 1 🔥🔥🔥🔥🔥`, testEmail);
   beforeAll(async () => {
     await global.dbClient.run(sql`DELETE FROM cats`);
     await global.dbClient.run(sql`DELETE FROM "user"`);
@@ -27,7 +26,6 @@ describe('Cats API (integration)', () => {
         name: 'Tester',
       },
     });
-    console.log(`testEmail 2 🔥🔥🔥🔥🔥`, testEmail);
     expect(signUpRes.statusCode).toBe(200);
 
     const signInRes = await global.app.inject({
@@ -35,7 +33,6 @@ describe('Cats API (integration)', () => {
       url: '/api/v1/auth/sign-in/email',
       payload: { email: testEmail, password: 'password123' },
     });
-    console.log(`testEmail 3 🔥🔥🔥🔥🔥`, testEmail);
     expect(signInRes.statusCode).toBe(200);
 
     const header = signInRes.headers['set-cookie'];

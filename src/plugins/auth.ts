@@ -2,6 +2,7 @@
 import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 import { auth } from '../auth';
+
 declare module 'fastify' {
   interface FastifyRequest {
     user: {
@@ -24,21 +25,12 @@ declare module 'fastify' {
   }
 }
 
-const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
-  fastify.log.info('🚀 Auth plugin is loading...');
-  fastify.log.info('🔧 Plugin options:', opts);
-  fastify.log.info('🌐 Fastify prefix:', fastify.prefix);
+const authPlugin: FastifyPluginAsync = async (fastify, _opts) => {
   // Auth handler function
   async function authHandler(request: FastifyRequest, reply: FastifyReply) {
-    fastify.log.info(
-      '🔥 Auth handler called for:',
-      request.method,
-      request.url,
-    );
     try {
       // Construct request URL
       const url = new URL(request.url, `http://${request.headers.host}`);
-      fastify.log.info('📍 Constructed URL:', url.toString());
 
       // Convert Fastify headers to standard Headers object
       const headers = new Headers();
@@ -53,10 +45,8 @@ const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
         body: request.body ? JSON.stringify(request.body) : undefined,
       });
 
-      fastify.log.info('🚀 Calling Better Auth handler...');
       // Process authentication request
       const response = await auth.handler(req);
-      fastify.log.info('✅ Better Auth response status:', response.status);
 
       // Forward response to client
       reply.status(response.status);
