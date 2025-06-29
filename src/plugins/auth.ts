@@ -143,7 +143,7 @@ const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
     {
       preHandler: authenticate,
     },
-    async (request, reply) => {
+    async (request, _reply) => {
       return {
         user: request.user,
         session: request.session,
@@ -151,7 +151,7 @@ const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
     },
   );
 
-  fastify.get('/status', async (request, reply) => {
+  fastify.get('/status', async (request, _reply) => {
     await getUser(request);
 
     return {
