@@ -6,16 +6,6 @@ CREATE TABLE `cats` (
 	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `users` (
-	`id` text PRIMARY KEY NOT NULL,
-	`username` text NOT NULL,
-	`password` text NOT NULL,
-	`pin` text NOT NULL,
-	`role` text DEFAULT 'user' NOT NULL,
-	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE `recipe_steps` (
 	`id` text PRIMARY KEY NOT NULL,
 	`recipe_id` text NOT NULL,
