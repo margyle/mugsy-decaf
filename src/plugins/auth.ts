@@ -2,7 +2,6 @@
 import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import fp from 'fastify-plugin';
 import { auth } from '../auth';
-
 declare module 'fastify' {
   interface FastifyRequest {
     user: {
@@ -25,9 +24,17 @@ declare module 'fastify' {
   }
 }
 
-const authPlugin: FastifyPluginAsync = async (fastify, _opts) => {
+const authPlugin: FastifyPluginAsync = async (fastify, opts) => {
+  fastify.log.info('🚀 Auth plugin is loading...');
+  fastify.log.info('🔧 Plugin options:', opts);
+  fastify.log.info('🌐 Fastify prefix:', fastify.prefix);
   // Auth handler function
   async function authHandler(request: FastifyRequest, reply: FastifyReply) {
+    fastify.log.info(
+      '🔥 Auth handler called for:',
+      request.method,
+      request.url,
+    );
     try {
       // Construct request URL
       const url = new URL(request.url, `http://${request.headers.host}`);
