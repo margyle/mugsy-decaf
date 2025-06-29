@@ -9,6 +9,10 @@ import scalarPlugin from './scalar';
 import errorHandler from './errorHandler';
 import validationPlugin from './validation';
 import loggerPlugin from './logger';
+import dotenv from 'dotenv';
+
+// todo: update once we have prod env setup
+dotenv.config({ path: '.env.dev' });
 
 const plugins: FastifyPluginAsync = async fastify => {
   // Register plugins in appropriate order
@@ -19,7 +23,11 @@ const plugins: FastifyPluginAsync = async fastify => {
   await fastify.register(validationPlugin); // Register validation before auth
   await fastify.register(swaggerPlugin);
   await fastify.register(scalarPlugin); // Register Scalar after Swagger
-  await fastify.register(fastifyCookie);
+  await fastify.register(fastifyCookie, {
+    secret: process.env.COOKIE_SECRET,
+    hook: 'onRequest',
+    parseOptions: {},
+  });
   await fastify.register(authPlugin);
 };
 

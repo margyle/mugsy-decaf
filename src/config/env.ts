@@ -38,6 +38,10 @@ const requiredEnvVars: Array<keyof EnvConfig> = [
   'JWT_SECRET',
   'DATABASE_URL',
   'BETTER_AUTH_SECRET',
+  'PORT',
+  'HOST',
+  'LOG_LEVEL',
+  'NODE_ENV',
 ];
 
 for (const envVar of requiredEnvVars) {
