@@ -1,7 +1,6 @@
-// tests/setup.ts
-// Ensure test environment variables before any imports
 process.env.NODE_ENV = 'test';
-process.env.DATABASE_URL = 'file:shared?mode=memory&cache=shared';
+// process.env.DATABASE_URL = 'file:shared?mode=memory&cache=shared';
+process.env.DATABASE_URL = 'testdb';
 
 import { beforeAll, afterAll } from 'vitest';
 import betterSqlite3 from 'better-sqlite3';
