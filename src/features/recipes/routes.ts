@@ -45,7 +45,7 @@ export default async function recipeRoutes(fastify: FastifyInstance) {
         200: { $ref: 'recipesArrayResponse#' },
       },
     },
-    preHandler: [server.authenticate],
+    // preHandler: [server.authenticate],
     handler: handlers.getAllRecipesHandler,
   });
 
