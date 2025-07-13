@@ -24,8 +24,8 @@ A Fastify TypeScript backend for Mugsy
 1. Clone the repository
 
    ```bash
-   git clone https://github.com/your-organization/decaf-backend.git
-   cd decaf-backend
+   git clone https://github.com/margyle/mugsy-decaf
+   cd mugsy-decaf
    ```
 
 2. Install dependencies
@@ -37,7 +37,7 @@ A Fastify TypeScript backend for Mugsy
 3. Set up environment variables
 
    ```bash
-   cp .env.example .env
+   cp .env.example .env.dev
    ```
 
 4. Generate and apply database migrations
